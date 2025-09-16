@@ -4,7 +4,7 @@ import { useInView } from 'react-intersection-observer';
 import CountUp from './CountUp';
 import image from '../assets/images/profile.png';
 import ProfileCard from './ProfileCard';
-
+import ElectricBorder from './BorderElectric'
 const About = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
@@ -44,19 +44,23 @@ const About = () => {
 
         <div className="flex flex-col md:flex-row gap-10 items-stretch">
           {/* Left: ProfileCard */}
-          <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={slideInLeft} style={{ y: imageY }} className="md:w-2/5">
-            <ProfileCard
-              name="Hicham Bayi"
-              title="Graphic Designer"
-              handle="HichamBay"
-              status="free"
-              contactText="Contact Me"
-              avatarUrl={image}
-              showUserInfo={true}
-              enableTilt={true}
-              enableMobileTilt={false}
-              onContactClick={() => console.log('Contact clicked')}
-            />
+          <motion.div initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={slideInLeft} style={{ y: imageY }} className="md:w-auto">
+            <ElectricBorder
+            className={'py-5'}
+              color="#7df9ff"
+              speed={1}
+              chaos={0.5}
+              thickness={2}
+              style={{ borderRadius: 16 }}
+            >
+              <div>
+                <p className= 'mt-4 text-white text-center' style={{ margin: '6px 0 0', opacity: 0.8 }}>
+                  A glowing, animated border wrapper.
+                </p>
+                <div className="bg-gradient-to-t from black via-black/30 to-transparent relative"></div>
+                <img src={image} className='mb-4 z-10'  alt="" srcset="" style={{width:"54vh",height:"68vh"}} />
+              </div>
+            </ElectricBorder>
           </motion.div>
 
           {/* Right: Content */}

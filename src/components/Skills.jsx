@@ -1,7 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-
+import ilustrator from "../assets/images/illustator.png"
+import primerepro from "../assets/images/primerepro.png"
+import indesign from "../assets/images/indesign.png"
+import aftereffect from "../assets/images/aftereffect.png"
 const Skills = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.15 });
 
@@ -30,10 +33,10 @@ const Skills = () => {
   ];
 
   const tools = [
-    { name: 'Figma', icon: '🎨', color: '#ff5e00' },
-    { name: 'Photoshop', icon: '🖌️', color: '#31a8ff' },
-    { name: 'Illustrator', icon: '✏️', color: '#ff9a00' },
-    { name: 'After-Effects', icon: '🎬', color: '#d291ff' },
+    { name: 'Illustrator', icon: ilustrator, color: '#ff5e00' },
+    { name: 'primere Pro', icon: primerepro, color: '#31a8ff' },
+    { name: 'InDesign', icon: indesign, color: '#ff9a00' },
+    { name: 'After-Effects', icon: aftereffect, color: '#d291ff' },
     { name: 'VS Code', icon: '💻', color: '#007acc' },
     { name: 'GitHub', icon: '🐙', color: '#171515' },
   ];
@@ -78,7 +81,7 @@ const Skills = () => {
         className="absolute inset-0 -z-10 rounded-2xl blur-lg opacity-0 group-hover:opacity-40 transition-opacity"
         style={{ background: tool.color }}
       />
-      <div className="text-3xl mb-2">{tool.icon}</div>
+      <div className="text-3xl mb-2"><img src={tool.icon} alt="" /></div>
       <p className="text-gray-200 text-sm font-medium">{tool.name}</p>
     </motion.div>
   );

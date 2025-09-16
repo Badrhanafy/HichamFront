@@ -8,7 +8,7 @@ import SplashCursor from './SplashCursor'
 import DarkVeil from './DarkVeil';
 import { ArrowRight } from '@/components/animate-ui/icons/arrow-right';
 import { AnimateIcon } from '@/components/animate-ui/icons/icon';
-import profile from '../assets/images/profile.png';
+import profile from "../assets/images/profile.png"
 const Hero = () => {
   const [scrollDirection, setScrollDirection] = useState('down');
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -103,22 +103,9 @@ const Hero = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full">
           <motion.div 
             className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center"
-            style={{ opacity, y }}
-            animate={{ 
-              opacity: scrollDirection === 'down' ? 0 : 1,
-              y: scrollDirection === 'down' ? -100 : 0,
-              // Smooth breathing animation for the entire grid
-              scale: [1, 1.01, 1],
-            }}
-            transition={{ 
-              duration: 0.5,
-              scale: {
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-                times: [0, 0.5, 1]
-              }
-            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
           >
             {/* Text Content Column */}
             <motion.div 
@@ -133,8 +120,8 @@ const Hero = () => {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="text-4xl md:text-6xl font-extrabold tracking-tight"
               >
-                <span className="block text-yellow-500">Creative </span>
-                <span className="block bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+                <span className="block text-white">Creative </span>
+                <span className="block bg-white bg-clip-text text-transparent">
                   Graphic Designer
                 </span>
               </motion.h1>
@@ -154,7 +141,7 @@ const Hero = () => {
                 transition={{ duration: 0.8, delay: 0.8 }}
                 className="mt-10 flex flex-wrap justify-center md:justify-start space-x-4"
               >
-                <FlipButton className={'px-6 py-3 bg-transparent text-purple-600 border border-white hover:border-t-white border-t-0  hover:bg-gradient-to-r from-purple-600/50 to-blue-600/50  rounded-md font-medium shadow-sm hover:shadow-md transition-all duration-300'}>
+                <FlipButton className={'px-6 py-3 bg-transparent text-white border border-white hover:border-t-white  hover:bg-gradient-to-r from-purple-600/50 to-blue-600/50  rounded-md font-medium shadow-sm hover:shadow-md transition-all duration-300'}>
                   <FlipButtonFront>
                     My Works
                   </FlipButtonFront>
@@ -164,9 +151,7 @@ const Hero = () => {
                     </AnimateIcon>
                   </FlipButtonBack>
                 </FlipButton>
-                <LiquidButton className={'hover:border hover:text-black rounded-sm w-32 backdrop-blur-md text-white border border-b-0 border-yellow-500'}>
-                  Contact
-                </LiquidButton>
+               
               </motion.div>
 
               <motion.div
@@ -187,39 +172,30 @@ const Hero = () => {
               </motion.div>
             </motion.div>
 
-            {/* Profile Image Column */}
+            {/* Profile Image Column - Removed circle and added gradient overlay */}
             <motion.div 
-              className="order-1 md:order-2 flex justify-center"
-              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 0.8, delay: 0.3, type: "spring", stiffness: 100 }}
+              className="order-1 md:order-2 flex justify-center relative"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <motion.div 
-                className="relative"
-                whileHover={{ 
-                  scale: 1.05,
-                  rotate: 2,
-                  transition: { duration: 0.3 }
-                }}
-              >
-                <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-yellow-500/30 shadow-2xl shadow-purple-500/30">
+              <div className="relative w-full max-w-md">
+                {/* Main image container */}
+                <div className="relative mt-10 overflow-hidden rounded-lg shadow-2xl">
                   {/* Replace with your actual profile image */}
-                  <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
-                    <img src={profile} alt="" srcset="" />
+                  <div className="w-full h-80 md:h-96 bg-transparent flex items-center justify-center">
+                    <span className="  text-2xl font-bold">
+                      <img src={profile} alt="" className='w-64 h-auto' />
+                    </span>
                   </div>
+                  
+                  {/* Gradient overlay at the bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black to-transparent"></div>
                 </div>
-                <motion.div 
-                  className="absolute -inset-4 rounded-full border-2 border-yellow-500/20"
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    opacity: [0.5, 1, 0.5]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity
-                  }}
-                />
-              </motion.div>
+                
+                {/* Optional decorative elements */}
+               
+              </div>
             </motion.div>
           </motion.div>
 

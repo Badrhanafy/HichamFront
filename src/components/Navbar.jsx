@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Palette } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import logo  from "../assets/images/logo.png"
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -74,9 +74,9 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollToSection('#home')}>
-            <Palette className="h-8 w-8 text-purple-500" />
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
+          <div className="flex items-center  cursor-pointer" onClick={() => scrollToSection('#home')}>
+            <img src={logo} alt="" srcset="" style={{width:"14vh",height:"14vh"}} />
+            <span className="text-xl font-bold bg-white bg-clip-text text-transparent">
               EL Hachimi Bay
             </span>
           </div>
