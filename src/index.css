@@ -46,6 +46,14 @@ html {
   background: rgb(255, 208, 0); /* اللون ديال السكروول */
   border-radius: 10px;
 }
+@font-face {
+  font-family: "font1";
+  src: url("./assets/fonts/HelveticaNeueBold.otf")
+   
+}
+.tet{
+  font-family: "font1";
+}
 @layer base {
   :root {
     --background: 0 0% 100%;

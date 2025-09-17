@@ -8,7 +8,8 @@ import SplashCursor from './SplashCursor'
 import DarkVeil from './DarkVeil';
 import { ArrowRight } from '@/components/animate-ui/icons/arrow-right';
 import { AnimateIcon } from '@/components/animate-ui/icons/icon';
-import profile from "../assets/images/profile.png"
+import profile from "../assets/images/hhghg.png"
+
 const Hero = () => {
   const [scrollDirection, setScrollDirection] = useState('down');
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -104,12 +105,24 @@ const Hero = () => {
           <motion.div 
             className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center"
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            animate={{ 
+              opacity: 1, 
+              y: 0,
+              scale: [1, 1.005, 1] // Breathing animation
+            }}
+            transition={{ 
+              duration: 0.8,
+              scale: {
+                duration: 4,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut"
+              }
+            }}
           >
             {/* Text Content Column */}
             <motion.div 
-              className="order-2 md:order-1 text-center md:text-left"
+              className="order-2 md:order-1 mt-14 ml-12 text-center md:text-left"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -118,10 +131,10 @@ const Hero = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-4xl md:text-6xl font-extrabold tracking-tight"
+                className="text-4xl md:text-6xl  font-extrabold tracking-tight"
               >
-                <span className="block text-white">Creative </span>
-                <span className="block bg-white bg-clip-text text-transparent">
+                <span className="block text-white tet">Creative </span>
+                <span className="block tet bg-white bg-clip-text text-transparent">
                   Graphic Designer
                 </span>
               </motion.h1>
@@ -181,17 +194,30 @@ const Hero = () => {
             >
               <div className="relative w-full max-w-md">
                 {/* Main image container */}
-                <div className="relative mt-10 overflow-hidden rounded-lg shadow-2xl">
+                <motion.div 
+                  className="relative mt-10 overflow-hidden rounded-lg shadow-2xl"
+                  whileHover={{
+                    scale: 1.03,
+                    translateY: -5,
+                    boxShadow: "0 25px 50px -12px rgba(255, 215, 0, 0.5), 0 10px 30px -10px rgba(255, 140, 0, 0.3)"
+                  }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 15,
+                    duration: 0.3
+                  }}
+                >
                   {/* Replace with your actual profile image */}
                   <div className="w-full h-80 md:h-96 bg-transparent flex items-center justify-center">
-                    <span className="  text-2xl font-bold">
-                      <img src={profile} alt="" className='w-64 h-auto' />
+                    <span className="text-2xl font-bold">
+                      <img src={profile} alt="" className='w-full h-auto mt-10' />
                     </span>
                   </div>
                   
                   {/* Gradient overlay at the bottom */}
                   <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black to-transparent"></div>
-                </div>
+                </motion.div>
                 
                 {/* Optional decorative elements */}
                

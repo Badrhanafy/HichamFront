@@ -91,7 +91,7 @@ const Skills = () => {
     <section
       id="skills"
       ref={ref}
-      className="py-24 md:py-32 bg-[#0d1117] relative overflow-hidden"
+      className="py-24 md:py-32 bg-black relative overflow-hidden"
     >
       {/* decorative orbs */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-700/20 rounded-full blur-3xl animate-pulse" />

@@ -76,8 +76,8 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center  cursor-pointer" onClick={() => scrollToSection('#home')}>
             <img src={logo} alt="" srcset="" style={{width:"14vh",height:"14vh"}} />
-            <span className="text-xl font-bold bg-white bg-clip-text text-transparent">
-              EL Hachimi Bay
+            <span style={{marginLeft:"-15px"}}  className="text-xl   font-bold bg-white bg-clip-text text-transparent">
+              EL Hachimi Bayi
             </span>
           </div>
 
