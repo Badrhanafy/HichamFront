@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const gradientMapping = {
   blue: 'linear-gradient(hsl(223, 90%, 50%), hsl(208, 90%, 50%))',
   purple: 'linear-gradient(hsl(283, 90%, 50%), hsl(268, 90%, 50%))',
@@ -18,9 +20,10 @@ const GlassIcons = ({ items, className }) => {
   return (
     <div className={`grid gap-[5em] grid-cols-2 md:grid-cols-3 mx-auto py-[3em] overflow-visible ${className || ''}`}>
       {items.map((item, index) => (
-        <button
+        <Link
+        to={`/projects/${item.category}`}
           key={index}
-          type="button"
+
           aria-label={item.label}
           className={`relative bg-transparent outline-none w-[4.5em] h-[4.5em] [perspective:24em] [transform-style:preserve-3d] [-webkit-tap-highlight-color:transparent] group ${
             item.customClass || ''
@@ -48,7 +51,7 @@ const GlassIcons = ({ items, className }) => {
           <span className="absolute top-full left-0 right-0 text-center whitespace-nowrap leading-[2] text-base opacity-0 transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.83,0,0.17,1)] translate-y-0 group-hover:opacity-100 group-hover:[transform:translateY(20%)]">
             {item.label}
           </span>
-        </button>
+        </Link>
       ))}
     </div>
   );

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, Linkedin, Github, Instagram, User, MessageSquare } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Linkedin, Github, Instagram, User, MessageSquare, HeartPlus, Wallpaper } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import DomeGallery from './DomeGallery';
 import { FiFileText, FiBook, FiHeart, FiCloud, FiEdit, FiBarChart2 } from 'react-icons/fi';
 import  GlassIcons  from './GlassIcons';
 import socials from '../assets/images/social-media.png';
+import ProjectDomeGallery from './ProjectDomeGallery';
+import Navbar from './Navbar';
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -70,9 +72,9 @@ const Contact = () => {
     visible: { opacity: 1, y: 0 }
   };
   const items = [
-    { icon: <img src={socials} alt="" srcset="" />, color: 'blue', label: 'Social media' },
-    { icon: <FiBook />, color: 'purple', label: 'Books' },
-    { icon: <FiHeart />, color: 'green', label: 'Health' },
+    { category:"social-media", icon: <Instagram />, color: 'blue', label: 'Social media' },
+    { category:"logo", icon: <Wallpaper />, color: 'purple', label: 'Logo' },
+    { category:"test", icon: <FiHeart />, color: 'green', label: 'Health' },
   
   ];
   return (
@@ -80,11 +82,14 @@ const Contact = () => {
       id="contact"
       className="py-20 bg-black"
     >
+      <div className="absolute top-0">
+          <Navbar/>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-0 relative">
         {/* Left column - DomeGallery */}
 
         <div className="w-full h-[60vh] md:h-screen">
-          <DomeGallery />
+          <ProjectDomeGallery />
         </div>
 
         {/* Right column - Text content with gradient overlay */}

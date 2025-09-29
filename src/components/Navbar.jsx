@@ -1,90 +1,91 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Palette } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import logo  from "../assets/images/logo.png"
+import React, { useState, useEffect } from 'react'
+import { Menu, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { NavLink } from 'react-router-dom'
+import logo from '../assets/images/logo.png'
+
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState('#home');          // 1. track active section
+  const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
   const navItems = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Portfolio', href: '#portfolio' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Contact', href: '#contact' },
-  ];
+    { name: 'Home', to: '/' },
+    { name: 'About', to: '/about' },
+    /* { name: 'Portfolio', to: '/portfolio' }, */
+    { name: 'Skills', to: '/skills' },
+    { name: 'Projects', to: '/projects' },
+  ]
 
-  /* 2. creative active-link logic -------------------- */
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+      setScrolled(window.scrollY > 10)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
-      // find the section in viewport
-      const inView = navItems.find(({ href }) => {
-        const el = document.querySelector(href);
-        if (!el) return false;
-        const { top, bottom } = el.getBoundingClientRect();
-        return top <= 80 && bottom >= 80;   // 80px offset for navbar height
-      });
-      if (inView) setActive(inView.href);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToSection = (href) => {
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setIsOpen(false);
-  };
-
-  /* 3. underline animation variants ------------------ */
   const linkVariants = {
     rest: { width: 0, opacity: 0 },
     active: { width: '100%', opacity: 1 },
-  };
+  }
 
-  /* 4. reusable link ------------------------------- */
-  const NavLink = ({ item }) => (
-    <button
-      onClick={() => scrollToSection(item.href)}
-      className="relative px-3 py-2 text-sm font-medium transition-colors duration-300
-                 text-gray-300 hover:text-white"
+  const NavItem = ({ item }) => (
+    <NavLink
+      to={item.to}
+      end
+      className={({ isActive }) =>
+        `relative tet px-3 py-2 text-sm font-medium transition-colors duration-300 ${
+          isActive ? 'text-white' : 'text-gray-300 hover:text-white'
+        }`
+      }
+      onClick={() => setIsOpen(false)}
     >
-      {item.name}
-      <motion.div
-        className="absolute left-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500"
-        variants={linkVariants}
-        initial="rest"
-        animate={active === item.href ? 'active' : 'rest'}
-        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-      />
-    </button>
-  );
+      {({ isActive }) => (
+        <>
+          {item.name}
+          <motion.div
+            className="absolute left-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500"
+            variants={linkVariants}
+            initial="rest"
+            animate={isActive ? 'active' : 'rest'}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+          />
+        </>
+      )}
+    </NavLink>
+  )
 
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed w-full z-40 transition-all duration-300
-        ${scrolled ? 'bg-black/60 backdrop-blur-xl shadow-lg py-2' : 'bg-transparent py-4'}`}
+      className={`fixed w-full z-40 transition-all duration-300 ${
+        scrolled
+          ? 'bg-black/60 backdrop-blur-xl shadow-lg py-2'
+          : 'bg-transparent py-4'
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center  cursor-pointer" onClick={() => scrollToSection('#home')}>
-            <img src={logo} alt="" srcset="" style={{width:"14vh",height:"14vh"}} />
-            <span style={{marginLeft:"-15px"}}  className="text-xl   font-bold bg-white bg-clip-text text-transparent">
+          <NavLink to="/" className="flex  items-center cursor-pointer">
+            <img
+              src={logo}
+              alt="Logo"
+              style={{ width: '14vh', height: '14vh' }}
+            />
+            <span
+              style={{ marginLeft: '-15px' }}
+              className="text-xl font-bold bg-white bg-clip-text text-transparent"
+            >
               EL Hachimi Bayi
             </span>
-          </div>
+          </NavLink>
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
-              <NavLink key={item.name} item={item} />
+              <NavItem key={item.name} item={item} />
             ))}
           </div>
 
@@ -112,23 +113,28 @@ const Navbar = () => {
           >
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navItems.map((item) => (
-                <button
+                <NavLink
                   key={item.name}
-                  onClick={() => scrollToSection(item.href)}
-                  className={`block w-full text-left px-3 py-3 rounded-md text-base font-medium transition
-                    ${active === item.href
-                      ? 'text-white bg-white/10'
-                      : 'text-gray-300 hover:text-white hover:bg-white/5'}`}
+                  to={item.to}
+                  end
+                  className={({ isActive }) =>
+                    `block w-full tet px-3 py-3 rounded-md text-base font-medium transition ${
+                      isActive
+                        ? 'text-white bg-white/10'
+                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    }`
+                  }
+                  onClick={() => setIsOpen(false)}
                 >
                   {item.name}
-                </button>
+                </NavLink>
               ))}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </motion.nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

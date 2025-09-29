@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState } from 'react';
 import { useGesture } from '@use-gesture/react';
 
 const DEFAULT_IMAGES = [
@@ -40,6 +41,8 @@ const DEFAULTS = {
 };
 
 const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+
+  
 const normalizeAngle = d => ((d % 360) + 360) % 360;
 const wrapAngleSigned = deg => {
   const a = (((deg + 180) % 360) + 360) % 360;
@@ -148,6 +151,26 @@ export default function DomeGallery({
   const openStartedAtRef = useRef(0);
   const lastDragEndAt = useRef(0);
 
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    let frame;
+    const autoRotate = () => {
+      setRotation(prev => ({
+        x: prev.x + 1.9, // rotation X slow
+        y: prev.y + 2, // rotation Y faster
+      }));
+      frame = requestAnimationFrame(autoRotate);
+    };
+    frame = requestAnimationFrame(autoRotate);
+
+    return () => cancelAnimationFrame(frame);
+  }, []);
+  const galleryRef = useRef(null);
+    useEffect(() => {
+    if (galleryRef.current) {
+      galleryRef.current.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
+    }
+  }, [rotation]);
   const scrollLockedRef = useRef(false);
   const lockScroll = useCallback(() => {
     if (scrollLockedRef.current) return;

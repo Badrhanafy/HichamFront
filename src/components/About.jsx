@@ -2,9 +2,10 @@ import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import CountUp from './CountUp';
-import image from '../assets/images/profile.png';
+import image from '../assets/images/hhghg.png';
 import ProfileCard from './ProfileCard';
 import ElectricBorder from './BorderElectric';
+import DownloadCV from './DownloadCv';
 
 const About = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
@@ -167,9 +168,7 @@ const About = () => {
               </div>
 
               <div className="mt-8 flex gap-4 flex-wrap">
-                <button className="px-5 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold hover:scale-105 transition-transform">
-                  Download CV
-                </button>
+                   <DownloadCV/>
                 <button className="px-5 py-2 rounded-lg border border-purple-500 text-purple-400 font-semibold hover:bg-purple-500/10 transition-colors">
                   View Portfolio
                 </button>

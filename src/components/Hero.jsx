@@ -9,7 +9,8 @@ import DarkVeil from './DarkVeil';
 import { ArrowRight } from '@/components/animate-ui/icons/arrow-right';
 import { AnimateIcon } from '@/components/animate-ui/icons/icon';
 import profile from "../assets/images/hhghg.png"
-
+import Lottie from 'lottie-react';
+import animationData from '../assets/Loading.json'
 const Hero = () => {
   const [scrollDirection, setScrollDirection] = useState('down');
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -54,24 +55,14 @@ const Hero = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-blue-900">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 1.2, opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center"
-        >
-          <motion.div
-            animate={{ 
-              rotate: 360,
-              scale: [1, 1.2, 1]
-            }}
-            transition={{ 
-              rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-              scale: { duration: 1, repeat: Infinity }
-            }}
-            className="w-20 h-20 rounded-full border-4 border-yellow-400 border-t-transparent"
-          />
+         <div className="absolute inset-0 z-0">
+        <DarkVeil />
+      </div>
+         <motion.div
+          className='w-24 h-24'
+         >
+               <Lottie animationData={animationData} loop={true} />
+         </motion.div>
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -80,7 +71,7 @@ const Hero = () => {
           >
             Loading Portfolio...
           </motion.p>
-        </motion.div>
+       
       </div>
     );
   }
@@ -154,7 +145,11 @@ const Hero = () => {
                 transition={{ duration: 0.8, delay: 0.8 }}
                 className="mt-10 flex flex-wrap justify-center md:justify-start space-x-4"
               >
-                <FlipButton className={'px-6 py-3 bg-transparent text-white border border-white hover:border-t-white  hover:bg-gradient-to-r from-purple-600/50 to-blue-600/50  rounded-md font-medium shadow-sm hover:shadow-md transition-all duration-300'}>
+                <FlipButton 
+                 onClick={()=>{
+                  Window.location.href="/projects"
+                 }}
+                className={'px-6 py-3 bg-transparent text-white border border-white hover:border-t-white  hover:bg-gradient-to-r from-purple-600/50 to-blue-600/50  rounded-md font-medium shadow-sm hover:shadow-md transition-all duration-300'}>
                   <FlipButtonFront>
                     My Works
                   </FlipButtonFront>
@@ -231,12 +226,12 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 1.5 }}
             className="mt-20 flex justify-center"
           >
-            <button
+         {/*    <button
               onClick={() => scrollToSection('#about')}
               className="text-gray-700 hover:text-purple-600 transition-colors duration-300"
             >
               <ArrowDown className="h-8 w-8 mx-auto text-yellow-500" />
-            </button>
+            </button> */}
           </motion.div>
         </div>
       </section>
