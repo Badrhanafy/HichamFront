@@ -8,14 +8,14 @@ const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
-
+const API_URL = import.meta.env.VITE_BACKEND_URL;
   useEffect(() => {
     fetchProjects();
   }, []);
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/projects');
+      const response = await axios.get(`${API_URL}/api/projects`);
       setProjects(response.data.data);
     } catch (error) {
       console.error('Error fetching projects:', error);

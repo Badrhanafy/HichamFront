@@ -29,7 +29,7 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
   const [sortBy, setSortBy] = useState('newest');
   const [expandedDescriptions, setExpandedDescriptions] = useState({});
   const [viewMode, setViewMode] = useState('grid');
-
+const API_URL = import.meta.env.VITE_BACKEND_URL;
   // Refs for animation
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
@@ -123,7 +123,7 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/projects/${projectId}`, {
+      const response = await fetch(`${API_URL}/api/projects/${projectId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
