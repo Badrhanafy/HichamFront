@@ -6,12 +6,12 @@ const ProjectDomeGallery = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+const API_URL = import.meta.env.VITE_BACKEND_URL;
   // Fetch projects from your API
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/projects');
+        const response = await axios.get(`${API_URL}/api/projects`);
         setProjects(response.data.data);
       } catch (err) {
         setError('Failed to load projects');
@@ -84,7 +84,7 @@ const SimpleProjectGallery = () => {
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/projects')
+    axios.get(`${API_URL}/api/projects`)
       .then(response => setProjects(response.data.data))
       .catch(console.error);
   }, []);
