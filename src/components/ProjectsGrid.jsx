@@ -373,7 +373,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
                   {/* Project Image */}
                   <div className="relative h-48 overflow-hidden">
                     <img
-                      src={`${API_URL}/storage/project.image_url`}
+                      src={`${API_URL}/project.image_url`}
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                      
