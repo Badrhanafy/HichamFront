@@ -36,8 +36,8 @@ function CategoryProjects() {
   const isLogoCategory = category.category?.toLowerCase() === 'logo';
 
   // Separate sports projects from regular projects
-  const sportsProjects = projects.filter(project => project.is_sport === true);
-  const regularProjects = projects.filter(project => project.is_sport !== true);
+  const sportsProjects = projects.filter(project => project.is_sport === 1);
+  const regularProjects = projects.filter(project => project.is_sport !== 1);
   
   // Filter sports and regular projects separately
   const filteredSportsProjects = sportsProjects.filter(project =>
