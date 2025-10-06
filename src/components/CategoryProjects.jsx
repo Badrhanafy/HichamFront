@@ -36,8 +36,8 @@ function CategoryProjects() {
   const isLogoCategory = category.category?.toLowerCase() === 'logo';
 
   // Separate sports projects from regular projects
-  const sportsProjects = projects.filter(project => project.is_sport === 1);
-  const regularProjects = projects.filter(project => project.is_sport !== 1);
+  const sportsProjects = projects.filter(project => project.is_sport === true);
+  const regularProjects = projects.filter(project => project.is_sport !== true);
   
   // Filter sports and regular projects separately
   const filteredSportsProjects = sportsProjects.filter(project =>
@@ -170,16 +170,19 @@ function CategoryProjects() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
-        className={`group relative heads bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden h-full flex flex-col ${
+        className={`group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden h-full flex flex-col ${
           isSports 
-            ? 'border-cyan-400/30 hover:border-cyan-400/50' 
+            ? 'border-orange-400/30 hover:border-orange-400/50' 
             : 'border-white/10 hover:border-cyan-400/30'
         }`}
       >
         {/* Sports Project Badge */}
         {isSports && (
           <div className="absolute top-4 left-4 z-10">
-          
+            <div className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold uppercase tracking-wider rounded-full border border-orange-300/50">
+              <Trophy className="w-3 h-3" />
+              SPORTS
+            </div>
           </div>
         )}
 
@@ -208,7 +211,51 @@ function CategoryProjects() {
           />
         </Link>
 
-   
+        {/* Project Content */}
+        <div className="p-6">
+          {/* Description */}
+          <div className="mb-4">
+            <p className="text-gray-400 text-sm leading-relaxed line-clamp-3">
+              {project.description}
+            </p>
+          </div>
+
+          {/* Technologies */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Zap className="w-4 h-4 text-cyan-400" />
+              <span className="text-sm font-bold text-cyan-400 uppercase tracking-wider">Tech Stack</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {projectTechnologies.slice(0, 4).map((tech, index) => (
+                <span
+                  key={index}
+                  className="px-2 py-1 bg-white/5 text-cyan-300 text-xs font-medium border border-cyan-400/20 backdrop-blur-sm"
+                >
+                  {tech}
+                </span>
+              ))}
+              {projectTechnologies.length > 4 && (
+                <span className="px-2 py-1 bg-white/5 text-gray-400 text-xs border border-white/10">
+                  +{projectTechnologies.length - 4}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Action Button */}
+          <Link
+            to={`/projects/project/${project.id}`}
+            className={`w-full py-3 text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 group/btn ${
+              isSports
+                ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
+                : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600'
+            }`}
+          >
+            VIEW PROJECT DETAILS
+            <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-200" />
+          </Link>
+        </div>
 
         {/* Hover Border Effect */}
         <div className={`absolute inset-0 border-2 border-transparent group-hover:border-${
@@ -271,7 +318,7 @@ function CategoryProjects() {
                       placeholder="Search logos..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-80 texts pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:bg-white/10 transition-all duration-300"
+                      className="w-80 pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:bg-white/10 transition-all duration-300"
                     />
                   </div>
                 </div>
@@ -378,24 +425,22 @@ function CategoryProjects() {
         {/* Header */}
         <div className="max-w-7xl mx-auto mb-8">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center  text-center  mb-4 px-6 py-3 bg-transparent backdrop-blur-lg border border-white/10">
-              
-              <span className="text-white heads text-center font-medium text-sm uppercase tracking-wider">
-                <center>
-                    {category.category} Projects
-                </center>
+            <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 bg-white/5 backdrop-blur-lg border border-white/10">
+              <Sparkles className="w-6 h-6 text-cyan-400" />
+              <span className="text-cyan-400 font-medium text-sm uppercase tracking-wider">
+                {category.category} Portfolio
               </span>
             </div>
-            <h1 className="text-6xl font-black heads text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent uppercase">
+            <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent uppercase">
               {category.category} Projects
             </h1>
-            <p className="text-xl texts text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
               Explore our curated collection of {category.category.toLowerCase()} projects built with cutting-edge technologies
             </p>
           </div>
 
           {/* Control Panel */}
-          <div className="bg-black/40 backdrop-blur-lg border focus:border-white/10 border-white/10 p-6 mb-8">
+          <div className="bg-black/40 backdrop-blur-lg border border-white/10 p-6 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               {/* Search */}
               <div className="md:col-span-2 relative">
@@ -405,17 +450,17 @@ function CategoryProjects() {
                   placeholder="Search projects, technologies..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full texts pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-white/10 focus:bg-white/10 transition-all duration-300"
+                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:bg-white/10 transition-all duration-300"
                 />
               </div>
 
               {/* Sort */}
               <div className="relative">
-                <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white w-5 h-5" />
+                <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-400 w-5 h-5" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full pl-12 texts pr-4 py-4 bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/10 focus:bg-white/10 appearance-none"
+                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-400 focus:bg-white/10 appearance-none"
                 >
                   <option className='bg-slate-800' value="newest">Newest First</option>
                   <option className='bg-slate-800' value="oldest">Oldest First</option>
@@ -427,10 +472,10 @@ function CategoryProjects() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`flex-1 texts px-4 py-4 border transition-all duration-300 flex items-center justify-center gap-2 ${
+                  className={`flex-1 px-4 py-4 border transition-all duration-300 flex items-center justify-center gap-2 ${
                     viewMode === 'grid' 
-                      ? 'border-white/10 bg-cyan-400/10 text-white' 
-                      : 'border-white/10 bg-white/5 text-gray-400 '
+                      ? 'border-cyan-400 bg-cyan-400/10 text-cyan-400' 
+                      : 'border-white/10 bg-white/5 text-gray-400 hover:border-cyan-400/50'
                   }`}
                 >
                   <Grid3X3 className="w-4 h-4" />
@@ -438,10 +483,10 @@ function CategoryProjects() {
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`flex-1 px-4 texts py-4 border transition-all duration-300 flex items-center justify-center gap-2 ${
+                  className={`flex-1 px-4 py-4 border transition-all duration-300 flex items-center justify-center gap-2 ${
                     viewMode === 'list' 
-                      ? 'border-white/10   bg-cyan-400/10 text-white' 
-                      : 'border-white/10 bg-white/5 text-gray-400 '
+                      ? 'border-cyan-400 bg-cyan-400/10 text-cyan-400' 
+                      : 'border-white/10 bg-white/5 text-gray-400 hover:border-cyan-400/50'
                   }`}
                 >
                   <List className="w-4 h-4" />
@@ -452,7 +497,13 @@ function CategoryProjects() {
 
             {/* Results Count */}
             <div className="mt-4 flex justify-between items-center">
-            
+              <span className="text-cyan-400 font-medium">
+                {filteredProjects.length} PROJECTS DISPLAYED • Sorted by {
+                  sortBy === 'newest' ? 'Newest First' : 
+                  sortBy === 'oldest' ? 'Oldest First' : 
+                  'Title'
+                }
+              </span>
               {(searchTerm) && (
                 <button
                   onClick={clearFilters}
@@ -469,7 +520,7 @@ function CategoryProjects() {
         {/* Projects Layout */}
         <div className="max-w-7xl mx-auto">
           {filteredProjects.length === 0 ? (
-            <div className="text heads-center py-24">
+            <div className="text-center py-24">
               <div className="text-cyan-400 mb-6">
                 <Search className="w-20 h-20 mx-auto opacity-50" />
               </div>
@@ -488,52 +539,6 @@ function CategoryProjects() {
             </div>
           ) : (
             <>
-              {/* Regular Projects Section */}
-              {filteredRegularProjects.length > 0 && (
-                <div>
-                  {/* Regular Projects Header - Only show if there are sports projects above */}
-                  {filteredSportsProjects.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      className="bg-transparent heads backdrop-blur-lg border border-white/30 p-6 mb-8 rounded-xl"
-                    >
-                      <div className="">
-                        <div className="">
-                          <center>
-                            <div className=" ">
-                            
-                            <div>
-                              <h2 className="text-3xl font-black text-white bg-transparent  text-transparent">
-                                {category.category} PROJECTS
-                              </h2>
-                              <p className="text-white/80 texts text-sm font-medium">
-                                Professional {category.category.toLowerCase()} designs and solutions
-                              </p>
-                            </div>
-                          </div>
-                          </center>
-                        </div>
-                        
-                       
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Regular Projects Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {filteredRegularProjects.map((project, index) => (
-                      <ProjectCard 
-                        key={project.id} 
-                        project={project} 
-                        index={index} 
-                        isSports={false}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
               {/* Sports Projects Section */}
               {filteredSportsProjects.length > 0 && (
                 <div className="mb-12">
@@ -542,28 +547,35 @@ function CategoryProjects() {
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="bg-transparent text-center items-center mt-12 backdrop-blur-lg border border-white/30 p-6 mb-8 rounded-xl"
+                    className="bg-gradient-to-r from-orange-500/10 via-red-500/10 to-yellow-500/10 backdrop-blur-lg border border-orange-400/30 p-6 mb-8 rounded-xl"
                   >
-                    <div className=" ">
-                      <div className="">
-                        <div className="">
-                          
-                         <center>
-                              <div className='text-center'>
-                           <center>
-                                <h2 className="text-3xl heads font-black center text-white bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
+                            <Trophy className="w-8 h-8 text-white" />
+                          </div>
+                          <div>
+                            <h2 className="text-3xl font-black text-white bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
                               SPORTS DESIGNS
                             </h2>
-                           </center>
-                            <p className="text-white/60 texts text-sm font-medium">
+                            <p className="text-orange-300/80 text-sm font-medium">
                               Championship-level social media designs for sports brands
                             </p>
                           </div>
-                         </center>
                         </div>
                       </div>
                       
-                     
+                      <div className="text-right">
+                        <div className="flex items-center gap-2 text-orange-400">
+                          <Target className="w-5 h-5" />
+                          <span className="font-bold text-lg">{filteredSportsProjects.length}</span>
+                          <span className="text-orange-300/80 font-medium">SPORTS PROJECTS</span>
+                        </div>
+                        <p className="text-orange-300/60 text-sm mt-1">
+                          High-performance social media content
+                        </p>
+                      </div>
                     </div>
                   </motion.div>
 
@@ -581,7 +593,61 @@ function CategoryProjects() {
                 </div>
               )}
 
-            
+              {/* Regular Projects Section */}
+              {filteredRegularProjects.length > 0 && (
+                <div>
+                  {/* Regular Projects Header - Only show if there are sports projects above */}
+                  {filteredSportsProjects.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-lg border border-cyan-400/30 p-6 mb-8 rounded-xl"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="p-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl">
+                              <Sparkles className="w-8 h-8 text-white" />
+                            </div>
+                            <div>
+                              <h2 className="text-3xl font-black text-white bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                                {category.category} PROJECTS
+                              </h2>
+                              <p className="text-cyan-300/80 text-sm font-medium">
+                                Professional {category.category.toLowerCase()} designs and solutions
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="text-right">
+                          <div className="flex items-center gap-2 text-cyan-400">
+                            <Target className="w-5 h-5" />
+                            <span className="font-bold text-lg">{filteredRegularProjects.length}</span>
+                            <span className="text-cyan-300/80 font-medium">PROJECTS</span>
+                          </div>
+                          <p className="text-cyan-300/60 text-sm mt-1">
+                            Creative and innovative solutions
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Regular Projects Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {filteredRegularProjects.map((project, index) => (
+                      <ProjectCard 
+                        key={project.id} 
+                        project={project} 
+                        index={index} 
+                        isSports={false}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
