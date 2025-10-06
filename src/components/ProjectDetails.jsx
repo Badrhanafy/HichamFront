@@ -32,12 +32,12 @@ const ProjectDetails = () => {
   const [isImageHovered, setIsImageHovered] = useState(false);
   const [isImageZoomed, setIsImageZoomed] = useState(false);
   const [activeTech, setActiveTech] = useState(null);
-
+   const API_URL = import.meta.env.VITE_BACKEND_URL;
   useEffect(() => {
     const fetchProject = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:8000/api/projects/${id}`);
+        const response = await axios.get(`${API_URL}/api/projects/${id}`);
         if (response.data.success) {
           setProject(response.data.data);
         } else {

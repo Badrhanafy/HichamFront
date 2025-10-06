@@ -117,75 +117,73 @@ const Hero = () => {
           >
             {/* Text Content Column */}
             <motion.div
-              className="order-2 md:order-1 sm:bg-center  mt-14 ml-12 text-center md:text-left"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-4xl md:text-6xl  font-extrabold tracking-tight"
-              >
-                <span className="block text-white tet">Creative </span>
-                <span className="block tet bg-white sm:hidden bg-clip-text text-transparent">
-                  Graphic Designer
-                </span>
-              </motion.h1>
+  className="order-2 md:order-1 w-full text-center md:text-left px-4 sm:px-6 md:ml-12 mt-8 md:mt-14"
+  initial={{ opacity: 0, x: -50 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ duration: 0.8, delay: 0.2 }}
+>
+  <motion.h1
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay: 0.4 }}
+    className="text-4xl md:text-6xl font-extrabold tracking-tight"
+  >
+    <span className="block text-white">Creative </span>
+    <span className="block bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+      Graphic Designer
+    </span>
+  </motion.h1>
 
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className="mt-6 text-xl text-white max-w-3xl"
-              >
-                I create visually stunning designs that tell your brand's story and captivate your audience.
-              </motion.p>
+  <motion.p
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay: 0.6 }}
+    className="mt-6 text-lg md:text-xl text-white max-w-3xl mx-auto md:mx-0"
+  >
+    I create visually stunning designs that tell your brand's story and captivate your audience.
+  </motion.p>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-                className="mt-10 flex flex-wrap justify-center md:justify-start space-x-4"
-              >
-                <Link to={"/projects"}>
-                  <FlipButton
-                    className={'px-6 py-3 bg-transparent text-white border border-white hover:border-t-white  hover:bg-gradient-to-r from-purple-600/50 to-blue-600/50  rounded-md font-medium shadow-sm hover:shadow-md transition-all duration-300'}>
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay: 0.8 }}
+    className="mt-10 flex justify-center md:justify-start space-x-4"
+  >
+    <Link to={"/projects"}>
+      <FlipButton
+        className="px-6 py-3 bg-transparent text-white border border-white hover:border-t-white hover:bg-gradient-to-r from-purple-600/50 to-blue-600/50 rounded-md font-medium shadow-sm hover:shadow-md transition-all duration-300"
+      >
+        <FlipButtonFront>
+          My Works
+        </FlipButtonFront>
+        <FlipButtonBack>
+          <AnimateIcon animateOnHover>
+            <ArrowRight className="text-white" />
+          </AnimateIcon>
+        </FlipButtonBack>
+      </FlipButton>
+    </Link>
+  </motion.div>
 
-                    <FlipButtonFront>
-                      My Works
-                    </FlipButtonFront>
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay: 1.0 }}
+    className="mt-12 md:mt-16 flex justify-center md:justify-start space-x-6"
+  >
+    <a href="#" className="text-white hover:text-yellow-400 transition-colors duration-300">
+      <Github className="h-6 w-6" />
+    </a>
+    <a href="#" className="text-white hover:text-yellow-400 transition-colors duration-300">
+      <Linkedin className="h-6 w-6" />
+    </a>
+    <a href="#" className="text-white hover:text-yellow-400 transition-colors duration-300">
+      <Instagram className="h-6 w-6" />
+    </a>
+  </motion.div>
+</motion.div>
 
-                    <FlipButtonBack>
-                      <AnimateIcon animateOnHover>
-                        <ArrowRight className={'text-white h'} />
-                      </AnimateIcon>
-                    </FlipButtonBack>
-
-                  </FlipButton>
-                </Link>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.0 }}
-                className="mt-16 flex justify-center md:justify-start space-x-6"
-              >
-                <a href="#" className="text-gray-800 hover:text-purple-600 transition-colors duration-300">
-                  <Github className="h-6 w-6 text-white hover:text-yellow-400 transition-all duration-300" />
-                </a>
-                <a href="#" className="text-gray-800 hover:text-purple-600 transition-colors duration-300">
-                  <Linkedin className="h-6 w-6 text-white hover:text-yellow-400 transition-all duratio3-700" />
-                </a>
-                <a href="#" className="text-gray-800 hover:text-purple-600 transition-colors duration-300">
-                  <Instagram className="h-6 w-6 text-white hover:text-yellow-400 transition-all durati3n-700" />
-                </a>
-              </motion.div>
-            </motion.div>
-
-            {/* Profile Image Column - Removed circle and added gradient overlay */}
+          
             <motion.div
               className="order-1 md:order-2 flex justify-center relative"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -208,18 +206,18 @@ const Hero = () => {
                     duration: 0.3
                   }}
                 >
-                  {/* Replace with your actual profile image */}
+              
                   <div className="w-full h-80 md:h-96 bg-transparent flex items-center justify-center">
                     <span className="text-2xl font-bold">
                       <img src={profile} alt="" className='w-full h-auto mt-10' />
                     </span>
                   </div>
 
-                  {/* Gradient overlay at the bottom */}
+                
                   <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black to-transparent"></div>
                 </motion.div>
 
-                {/* Optional decorative elements */}
+                
 
               </div>
             </motion.div>
