@@ -18,7 +18,7 @@ const GlassIcons = ({ items, className }) => {
   };
 
   return (
-    <div className={`grid gap-[5em] grid-cols-2 md:grid-cols-3 mx-auto py-[3em] overflow-visible ${className || ''}`}>
+    <div className={`grid  w-56 lg:w-auto  mt-8 pt-5   grid-cols-2 md:grid-cols-3   overflow-visible ${className || ''}`}>
       {items.map((item, index) => (
         <Link
         to={`/projects/${item.category}`}

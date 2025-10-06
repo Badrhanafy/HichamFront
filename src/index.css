@@ -39,11 +39,11 @@ html {
   --liquid-button-background-color: transparent; /* خلفية الزر */
 }
 ::-webkit-scrollbar-track {
-  background: rgb(152, 89, 240); /* الخلفية */
+  background: rgb(235, 233, 236); /* الخلفية */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(255, 208, 0); /* اللون ديال السكروول */
+  background: rgb(105, 105, 104); /* اللون ديال السكروول */
   border-radius: 10px;
 }
 @font-face {
@@ -117,4 +117,19 @@ html {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@font-face {
+  font-family: "heads";
+  src: url("./assets//fonts/EudoxusSans-Bold.ttf");
+}
+@font-face {
+  font-family: "texts";
+  src: url("./assets//fonts/EudoxusSans-Light.ttf");
+}
+.heads{
+   font-family: "heads";
+}
+.texts{
+   font-family: "texts";
 }

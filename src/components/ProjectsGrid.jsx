@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   ExternalLink, 
   Code, 
@@ -8,26 +8,46 @@ import {
   ChevronUp,
   Search,
   Filter,
-  X
+  X,
+  Eye,
+  GitBranch,
+  Sparkles,
+  Zap,
+  Layers,
+  ArrowRight,
+  Edit3,
+  Trash2
 } from 'lucide-react';
+import { gsap } from 'gsap';
+import UpdateProject from './UpdateProject';
 
-const ProjectsGrid = ({ projects }) => {
+const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
   const [selectedProject, setSelectedProject] = useState(null);
+  const [updateProject, setUpdateProject] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [expandedDescriptions, setExpandedDescriptions] = useState({});
+  const [viewMode, setViewMode] = useState('grid');
+
+  // Refs for animation
+  const modalRef = useRef(null);
+  const overlayRef = useRef(null);
+  const imageRef = useRef(null);
+  const contentRef = useRef(null);
+
+  // Get current user from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const isAdmin = currentUser.role === 'admin';
 
   // Helper function to safely parse technologies
   const getTechnologies = (project) => {
     if (!project.technologies) return [];
     
-    // If technologies is already an array, return it
     if (Array.isArray(project.technologies)) {
       return project.technologies;
     }
     
-    // If technologies is a string, try to parse it as JSON
     if (typeof project.technologies === 'string') {
       try {
         return JSON.parse(project.technologies);
@@ -82,44 +102,204 @@ const ProjectsGrid = ({ projects }) => {
     setSelectedCategory('all');
   };
 
+  // Get project accent color based on category
+  const getCategoryColor = (category) => {
+    const colors = {
+      'Web Development': 'from-blue-500 to-cyan-500',
+      'Mobile App': 'from-green-500 to-emerald-500',
+      'Design': 'from-purple-500 to-pink-500',
+      'AI/ML': 'from-orange-500 to-red-500',
+      'Blockchain': 'from-indigo-500 to-purple-500',
+      'default': 'from-gray-500 to-slate-500'
+    };
+    return colors[category] || colors.default;
+  };
+
+  // Handle project deletion
+  const handleDeleteProject = async (projectId) => {
+    if (!window.confirm('Are you sure you want to delete this project?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8000/api/projects/${projectId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        onProjectDelete(projectId);
+        // Show success message
+        alert('Project deleted successfully!');
+      } else {
+        throw new Error('Failed to delete project');
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      alert('Failed to delete project');
+    }
+  };
+
+  // Open modal with animation
+  const openModal = (project) => {
+    setSelectedProject(project);
+    
+    setTimeout(() => {
+      if (modalRef.current && overlayRef.current && imageRef.current && contentRef.current) {
+        const tl = gsap.timeline();
+        
+        // Reset initial states
+        gsap.set(overlayRef.current, { opacity: 0 });
+        gsap.set(modalRef.current, { 
+          scale: 0.8, 
+          opacity: 0,
+          rotationY: 15,
+          transformOrigin: "center center"
+        });
+        gsap.set(imageRef.current, { scale: 1.2, opacity: 0, y: 50 });
+        gsap.set(contentRef.current, { y: 100, opacity: 0 });
+        
+        // Animation sequence
+        tl.to(overlayRef.current, {
+          opacity: 1,
+          duration: 0.4,
+          ease: "power2.out"
+        })
+        .to(modalRef.current, {
+          scale: 1,
+          opacity: 1,
+          rotationY: 0,
+          duration: 0.6,
+          ease: "back.out(1.4)",
+        }, "-=0.3")
+        .to(imageRef.current, {
+          scale: 1,
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: "power2.out"
+        }, "-=0.4")
+        .to(contentRef.current, {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          ease: "power2.out",
+          stagger: 0.1
+        }, "-=0.3");
+      }
+    }, 10);
+  };
+
+  // Close modal with animation
+  const closeModal = () => {
+    if (modalRef.current && overlayRef.current) {
+      const tl = gsap.timeline();
+      
+      tl.to(contentRef.current, {
+        y: 100,
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.in"
+      })
+      .to(imageRef.current, {
+        scale: 1.2,
+        opacity: 0,
+        y: 50,
+        duration: 0.3,
+        ease: "power2.in"
+      }, "-=0.2")
+      .to(modalRef.current, {
+        scale: 0.8,
+        opacity: 0,
+        rotationY: -15,
+        duration: 0.4,
+        ease: "power2.in"
+      }, "-=0.2")
+      .to(overlayRef.current, {
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.out",
+        onComplete: () => {
+          setSelectedProject(null);
+        }
+      }, "-=0.2");
+    } else {
+      setSelectedProject(null);
+    }
+  };
+
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleEscKey = (e) => {
+      if (e.keyCode === 27 && selectedProject) {
+        closeModal();
+      }
+    };
+
+    if (selectedProject) {
+      document.addEventListener('keydown', handleEscKey);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedProject]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-4">
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            My Projects Portfolio
+          <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 bg-white/5 backdrop-blur-lg border border-white/10">
+            <Sparkles className="w-6 h-6 text-cyan-400" />
+            <span className="text-cyan-400 font-medium text-sm uppercase tracking-wider">Project Portfolio</span>
+            {isAdmin && (
+              <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wider border border-red-500/30">
+                ADMIN MODE
+              </span>
+            )}
+          </div>
+          <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+            DIGITAL CREATIONS
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            A collection of my latest work and creative endeavors
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            Cutting-edge projects built with modern technologies and innovative solutions
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Control Panel */}
+        <div className="bg-black/40 backdrop-blur-lg border border-white/10 p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <div className="md:col-span-2 relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search projects..."
+                placeholder="Search projects, technologies..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:bg-white/10 transition-all duration-300"
               />
             </div>
 
             {/* Category Filter */}
             <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-400 w-5 h-5" />
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-400 focus:bg-white/10 appearance-none"
               >
                 {categories.map(category => (
-                  <option key={category} value={category}>
+                  <option className='bg-slate-800' key={category} value={category}>
                     {category === 'all' ? 'All Categories' : category}
                   </option>
                 ))}
@@ -130,36 +310,28 @@ const ProjectsGrid = ({ projects }) => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-4 bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-400 focus:bg-white/10"
             >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="title">Sort by Title</option>
+              <option className='bg-slate-800' value="newest">Newest First</option>
+              <option className='bg-slate-800' value="oldest">Oldest First</option>
+              <option className='bg-slate-800' value="title">Sort by Title</option>
             </select>
-
-            {/* Clear Filters */}
-            <button
-              onClick={clearFilters}
-              className="px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center gap-2"
-            >
-              <X className="w-4 h-4" />
-              Clear Filters
-            </button>
           </div>
 
           {/* Results Count */}
           <div className="mt-4 flex justify-between items-center">
-            <span className="text-gray-600">
-              Showing {filteredProjects.length} of {projects.length} projects
+            <span className="text-cyan-400 font-medium">
+              {filteredProjects.length} PROJECTS DISPLAYED
             </span>
-            {searchTerm || selectedCategory !== 'all' ? (
+            {(searchTerm || selectedCategory !== 'all') && (
               <button
                 onClick={clearFilters}
-                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                className="text-gray-400 hover:text-white text-sm font-medium flex items-center gap-2 transition-colors duration-200"
               >
-                Clear all filters
+                <X className="w-4 h-4" />
+                CLEAR FILTERS
               </button>
-            ) : null}
+            )}
           </div>
         </div>
       </div>
@@ -167,92 +339,123 @@ const ProjectsGrid = ({ projects }) => {
       {/* Projects Grid */}
       <div className="max-w-7xl mx-auto">
         {filteredProjects.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="text-gray-400 mb-4">
-              <Search className="w-16 h-16 mx-auto" />
+          <div className="text-center py-24">
+            <div className="text-cyan-400 mb-6">
+              <Search className="w-20 h-20 mx-auto opacity-50" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No projects found</h3>
-            <p className="text-gray-500">Try adjusting your search or filters</p>
+            <h3 className="text-2xl font-bold text-white mb-3">NO PROJECTS FOUND</h3>
+            <p className="text-gray-400 max-w-md mx-auto">
+              Try adjusting your search criteria or browse all categories
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => {
+          <div className={`grid gap-6 ${
+            viewMode === 'masonry' 
+              ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-[400px]' 
+              : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
+          }`}>
+            {filteredProjects.map((project, index) => {
               const projectTechnologies = getTechnologies(project);
+              const categoryColor = getCategoryColor(project.category);
               
               return (
                 <div
                   key={project.id}
-                  className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 group"
+                  className="group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border border-white/10 hover:border-cyan-400/30 transition-all duration-500 overflow-hidden"
+                  style={{
+                    animationDelay: `${index * 100}ms`,
+                    animation: 'fadeInUp 0.6s ease-out forwards'
+                  }}
                 >
+                  {/* Background Glow Effect */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${categoryColor} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                  
                   {/* Project Image */}
-                  <div className="relative h-80 overflow-hidden">
+                  <div className="relative h-48 overflow-hidden">
                     <img
                       src={project.image_url}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       onError={(e) => {
-                        e.target.src = `https://via.placeholder.com/800x600/3B82F6/FFFFFF?text=${encodeURIComponent(project.title)}`;
+                        e.target.src = `https://via.placeholder.com/800x400/0f172a/1e293b?text=${encodeURIComponent(project.title)}`;
                       }}
                     />
                     
                     {/* Image Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
                     
                     {/* Category Badge */}
                     <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded-full backdrop-blur-sm">
+                      <span className={`px-3 py-1 bg-gradient-to-r ${categoryColor} text-white text-xs font-bold uppercase tracking-wider`}>
                         {project.category}
                       </span>
                     </div>
 
-                    {/* View Project Button */}
-                    <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {/* Quick Actions */}
+                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                       <button
-                        onClick={() => setSelectedProject(project)}
-                        className="bg-white text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors duration-200 flex items-center gap-2 shadow-lg"
+                        onClick={() => openModal(project)}
+                        className="p-2 bg-black/50 backdrop-blur-sm text-white hover:bg-cyan-500 transition-colors duration-200"
                       >
-                        <ExternalLink className="w-4 h-4" />
-                        View Details
+                        <Eye className="w-4 h-4" />
                       </button>
+                      {isAdmin && (
+                        <>
+                          <button
+                            onClick={() => setUpdateProject(project)}
+                            className="p-2 bg-black/50 backdrop-blur-sm text-white hover:bg-blue-500 transition-colors duration-200"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProject(project.id)}
+                            className="p-2 bg-black/50 backdrop-blur-sm text-white hover:bg-red-500 transition-colors duration-200"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Project Title Overlay */}
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="text-xl font-black text-white mb-2 line-clamp-2">
+                        {project.title}
+                      </h3>
+                      <div className="flex items-center gap-3 text-xs text-gray-300">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(project.created_at).toLocaleDateString()}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Code className="w-3 h-3" />
+                          {projectTechnologies.length} tech
+                        </div>
+                      </div>
                     </div>
                   </div>
 
                   {/* Project Content */}
                   <div className="p-6">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3 line-clamp-2">
-                      {project.title}
-                    </h3>
-
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        {new Date(project.created_at).toLocaleDateString()}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Code className="w-4 h-4" />
-                        {projectTechnologies.length} technologies
-                      </div>
-                    </div>
-
                     {/* Description */}
                     <div className="mb-4">
-                      <p className={`text-gray-600 leading-relaxed ${
-                        expandedDescriptions[project.id] ? '' : 'line-clamp-3'
+                      <p className={`text-gray-400 text-sm leading-relaxed ${
+                        expandedDescriptions[project.id] ? '' : 'line-clamp-2'
                       }`}>
                         {project.description}
                       </p>
-                      {project.description.length > 150 && (
+                      {project.description.length > 100 && (
                         <button
                           onClick={() => toggleDescription(project.id)}
-                          className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-2 flex items-center gap-1"
+                          className="text-cyan-400 hover:text-cyan-300 text-xs font-medium mt-2 flex items-center gap-1 transition-colors duration-200"
                         >
                           {expandedDescriptions[project.id] ? (
                             <>
-                              Show less <ChevronUp className="w-4 h-4" />
+                              SHOW LESS <ChevronUp className="w-3 h-3" />
                             </>
                           ) : (
                             <>
-                              Read more <ChevronDown className="w-4 h-4" />
+                              READ MORE <ChevronDown className="w-3 h-3" />
                             </>
                           )}
                         </button>
@@ -261,37 +464,49 @@ const ProjectsGrid = ({ projects }) => {
 
                     {/* Technologies */}
                     <div className="mb-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Tag className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-700">Technologies:</span>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Zap className="w-4 h-4 text-cyan-400" />
+                        <span className="text-sm font-bold text-cyan-400 uppercase tracking-wider">Tech Stack</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {projectTechnologies.slice(0, 4).map((tech, index) => (
+                        {projectTechnologies.slice(0, 3).map((tech, index) => (
                           <span
                             key={index}
-                            className="px-3 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 rounded-full text-xs font-medium border border-blue-200"
+                            className="px-3 py-1 bg-white/5 text-cyan-300 text-xs font-medium border border-cyan-400/20 backdrop-blur-sm"
                           >
                             {tech}
                           </span>
                         ))}
-                        {projectTechnologies.length > 4 && (
-                          <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
-                            +{projectTechnologies.length - 4} more
+                        {projectTechnologies.length > 3 && (
+                          <span className="px-3 py-1 bg-white/5 text-gray-400 text-xs border border-white/10">
+                            +{projectTechnologies.length - 3}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 pt-4 border-t border-gray-100">
+                    {/* Action Button */}
+                    <div className="flex gap-2">
                       <button
-                        onClick={() => setSelectedProject(project)}
-                        className="flex-1 bg-blue-500 text-white py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 text-center"
+                        onClick={() => openModal(project)}
+                        className="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold text-sm uppercase tracking-wider hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 group/btn"
                       >
-                        View Project
+                        EXPLORE PROJECT
+                        <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-200" />
                       </button>
+                      {isAdmin && (
+                        <button
+                          onClick={() => setUpdateProject(project)}
+                          className="px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold text-sm uppercase tracking-wider hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 transform hover:scale-[1.02]"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
+
+                  {/* Hover Border Effect */}
+                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-cyan-400/20 transition-all duration-500 pointer-events-none" />
                 </div>
               );
             })}
@@ -301,64 +516,151 @@ const ProjectsGrid = ({ projects }) => {
 
       {/* Project Modal */}
       {selectedProject && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="relative h-96">
-              <img
-                src={selectedProject.image_url}
-                alt={selectedProject.title}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.src = `https://via.placeholder.com/1200x600/3B82F6/FFFFFF?text=${encodeURIComponent(selectedProject.title)}`;
-                }}
-              />
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="absolute top-4 right-4 bg-white p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            
-            <div className="p-8 overflow-y-auto max-h-[calc(90vh-24rem)]">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                    {selectedProject.title}
-                  </h2>
-                  <div className="flex items-center gap-4 text-gray-600">
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {selectedProject.category}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(selectedProject.created_at).toLocaleDateString()}
-                    </span>
+        <div 
+          ref={overlayRef}
+          className="fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center p-4 z-50"
+          style={{ opacity: 0 }}
+          onClick={(e) => e.target === e.currentTarget && closeModal()}
+        >
+          <div 
+            ref={modalRef}
+            className="bg-gradient-to-br from-slate-900 to-black border border-cyan-400/20 max-w-6xl w-full max-h-[95vh] overflow-hidden relative"
+            style={{ 
+              transform: 'scale(0.8) rotateY(15deg)',
+              opacity: 0 
+            }}
+          >
+            {/* Close Button */}
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 z-10 p-3 bg-black/50 backdrop-blur-lg text-white hover:bg-cyan-500 transition-colors duration-200 border border-cyan-400/20 hover:scale-110 transform transition-transform duration-200"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+              {/* Image Section */}
+              <div className="relative h-80 lg:h-full">
+                <div 
+                  ref={imageRef}
+                  className="w-full h-full relative"
+                  style={{
+                    transform: 'scale(1.2) translateY(50px)',
+                    opacity: 0
+                  }}
+                >
+                  <img
+                    src={selectedProject.image_url}
+                    alt={selectedProject.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = `https://via.placeholder.com/1200x800/0f172a/1e293b?text=${encodeURIComponent(selectedProject.title)}`;
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                  
+                  {/* Project Info Overlay */}
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <h2 className="text-4xl font-black text-white mb-3">
+                      {selectedProject.title}
+                    </h2>
+                    <div className="flex items-center gap-4">
+                      <span className={`px-4 py-2 bg-gradient-to-r ${getCategoryColor(selectedProject.category)} text-white font-bold text-sm uppercase tracking-wider`}>
+                        {selectedProject.category}
+                      </span>
+                      <span className="text-cyan-400 flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        {new Date(selectedProject.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <p className="text-gray-700 text-lg leading-relaxed mb-6">
-                {selectedProject.description}
-              </p>
+              {/* Content Section */}
+              <div 
+                ref={contentRef}
+                className="p-8 overflow-y-auto"
+                style={{
+                  transform: 'translateY(100px)',
+                  opacity: 0
+                }}
+              >
+                <div className="space-y-6">
+                  {/* Description */}
+                  <div>
+                    <h3 className="text-xl font-bold text-cyan-400 mb-3 uppercase tracking-wider">PROJECT OVERVIEW</h3>
+                    <p className="text-gray-300 leading-relaxed text-lg">
+                      {selectedProject.description}
+                    </p>
+                  </div>
 
-              <div className="mb-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Technologies Used</h3>
-                <div className="flex flex-wrap gap-3">
-                  {getTechnologies(selectedProject).map((tech, index) => (
-                    <span
-                      key={index}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full font-medium shadow-lg"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+                  {/* Technologies */}
+                  <div>
+                    <h3 className="text-xl font-bold text-cyan-400 mb-4 uppercase tracking-wider">TECHNOLOGY STACK</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {getTechnologies(selectedProject).map((tech, index) => (
+                        <div
+                          key={index}
+                          className="p-4 bg-white/5 border border-cyan-400/20 text-cyan-300 text-center font-medium hover:bg-cyan-500/10 transition-colors duration-200 transform hover:scale-105"
+                          style={{
+                            animationDelay: `${index * 100}ms`
+                          }}
+                        >
+                          {tech}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4 pt-6">
+                    <button className="flex-1 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold uppercase tracking-wider hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105">
+                      VIEW LIVE DEMO
+                    </button>
+                    <button className="px-6 py-4 border border-cyan-400 text-cyan-400 font-bold uppercase tracking-wider hover:bg-cyan-400 hover:text-black transition-all duration-300 transform hover:scale-105">
+                      SOURCE CODE
+                    </button>
+                    {isAdmin && (
+                      <button 
+                        onClick={() => {
+                          setUpdateProject(selectedProject);
+                          closeModal();
+                        }}
+                        className="px-6 py-4 border border-blue-400 text-blue-400 font-bold uppercase tracking-wider hover:bg-blue-400 hover:text-black transition-all duration-300 transform hover:scale-105"
+                      >
+                        EDIT PROJECT
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Update Project Modal */}
+      {updateProject && (
+        <UpdateProject
+          project={updateProject}
+          onClose={() => setUpdateProject(null)}
+          onUpdate={onProjectUpdate}
+        />
+      )}
+
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 };

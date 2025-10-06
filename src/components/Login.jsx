@@ -10,7 +10,7 @@ const Login = () => {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-
+      const API_URL = import.meta.env.VITE_BACKEND_URL;
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -25,7 +25,7 @@ const Login = () => {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:8000/api/auth/login', formData);
+            const response = await axios.post(`${API_URL}/api/auth/login`, formData);
 
             if (response.data.success) {
                 // Save token to localStorage
@@ -34,7 +34,7 @@ const Login = () => {
 
                 // Redirect or show success message
                 console.log('Login successful:', response.data.data);
-                window.location.href = '/dashboard'; // Adjust redirect as needed
+                window.location.href = '/Admin'; // Adjust redirect as needed
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed. Please try again.');

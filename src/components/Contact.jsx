@@ -8,6 +8,7 @@ import  GlassIcons  from './GlassIcons';
 import socials from '../assets/images/social-media.png';
 import ProjectDomeGallery from './ProjectDomeGallery';
 import Navbar from './Navbar';
+import { Helmet } from 'react-helmet-async';
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -74,7 +75,7 @@ const Contact = () => {
   const items = [
     { category:"social-media", icon: <Instagram />, color: 'blue', label: 'Social media' },
     { category:"logo", icon: <Wallpaper />, color: 'purple', label: 'Logo' },
-    { category:"test", icon: <FiHeart />, color: 'green', label: 'Health' },
+   
   
   ];
   return (
@@ -82,6 +83,9 @@ const Contact = () => {
       id="contact"
       className="py-20 bg-black"
     >
+       <Helmet>
+        <title>el-hacimi | projects</title>
+      </Helmet>
       <div className="absolute top-0">
           <Navbar/>
       </div>
@@ -108,16 +112,17 @@ const Contact = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <motion.h2
-              className="text-3xl md:text-4xl font-bold mb-6 text-yellow-400"
+              className="text-3xl md:text-4xl font-bold heads mb-6"
+              style={{color:"#3179f4"}}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Let's Connect
+              Browse My Works 
             </motion.h2>
 
             <motion.p
-              className="text-lg md:text-xl mb-8 leading-relaxed text-gray-200"
+              className="text-lg md:text-xl mb-8 leading-relaxed texts text-gray-200"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.6 }}

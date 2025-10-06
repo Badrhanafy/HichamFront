@@ -6,6 +6,7 @@ import image from '../assets/images/hhghg.png';
 import ProfileCard from './ProfileCard';
 import ElectricBorder from './BorderElectric';
 import DownloadCV from './DownloadCv';
+import { Helmet } from 'react-helmet-async';
 
 const About = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
@@ -34,6 +35,9 @@ const About = () => {
 
   return (
     <section id="about" ref={sectionRef} className="py-20 md:py-32 bg-[rgb(1,0,0)] relative overflow-hidden">
+        <Helmet>
+                <title>EL Hachimi | About</title>
+              </Helmet>
       {/* subtle animated background orbs */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-purple-700/20 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-700/20 rounded-full blur-3xl animate-pulse delay-2000" />

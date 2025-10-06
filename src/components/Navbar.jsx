@@ -118,7 +118,7 @@ const Navbar = () => {
                   to={item.to}
                   end
                   className={({ isActive }) =>
-                    `block w-full tet px-3 py-3 rounded-md text-base font-medium transition ${
+                    `block w-full tet px-3 py-3 rounded-md text-base font-bold transition ${
                       isActive
                         ? 'text-white bg-white/10'
                         : 'text-gray-300 hover:text-white hover:bg-white/5'

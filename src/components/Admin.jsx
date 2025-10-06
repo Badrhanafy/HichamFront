@@ -1,39 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import AdminSidebar from './AdminSidebar';
-import AdminHeader from './AdminHeader';
-import DashboardContent from './DashboardContent';
 import ProjectsGrid from './ProjectsGrid';
 import AddProject from './AddProject';
 import axios from 'axios';
-import { Plus } from 'lucide-react';
+import { Plus, Menu } from 'lucide-react';
+import ProfileSection from './ProfileSection';
+import Lottie from 'lottie-react';
+import animationData from '../assets/Hello.json';
+import { motion } from 'framer-motion';
 
 const Admin = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+  // Check screen size for responsive behavior
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setIsSidebarCollapsed(true);
+      }
+    };
 
-  // Page titles and descriptions
-  const pageConfig = {
-    dashboard: {
-      title: 'Dashboard',
-      description: 'Overview of your portfolio statistics'
-    },
-    projects: {
-      title: 'Projects Management',
-      description: 'Manage your project portfolio'
-    },
-    users: {
-      title: 'User Management',
-      description: 'Manage system users and permissions'
-    },
-    settings: {
-      title: 'Settings',
-      description: 'Configure your portfolio settings'
-    }
-  };
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   useEffect(() => {
     if (activeSection === 'projects') {
@@ -43,7 +41,8 @@ const Admin = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/projects');
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/api/projects`);
       setProjects(response.data.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -57,37 +56,41 @@ const Admin = () => {
     setIsAddProjectOpen(false);
   };
 
+  const handleProjectUpdate = (updatedProject) => {
+    setProjects(prev => prev.map(project => 
+      project.id === updatedProject.id ? updatedProject : project
+    ));
+  };
+
+  const handleProjectDelete = (projectId) => {
+    setProjects(prev => prev.filter(project => project.id !== projectId));
+  };
+
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
   const handleSectionChange = (section) => {
     setActiveSection(section);
-    if (window.innerWidth < 1024) {
-      setIsMobileMenuOpen(false);
-    }
   };
 
   const renderContent = () => {
     switch (activeSection) {
-      case 'dashboard':
-        return <DashboardContent />;
+      case 'profile':
+        return <ProfileSection />;
       
       case 'projects':
         return (
-          <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
+          <div className="p-4 md:p-6">
+            {/* Header for Projects */}
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Projects Management</h2>
-                <p className="text-gray-600">Create and manage your projects</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Projects Management</h2>
+                <p className="text-gray-400">Create and manage your projects</p>
               </div>
               <button
                 onClick={() => setIsAddProjectOpen(true)}
-                className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-3 md:px-6 md:py-3 rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl w-full sm:w-auto justify-center"
               >
                 <Plus className="w-5 h-5" />
                 Add New Project
@@ -96,73 +99,76 @@ const Admin = () => {
             
             {loading ? (
               <div className="flex items-center justify-center py-16">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-500"></div>
               </div>
             ) : (
-              <ProjectsGrid projects={projects} />
+              <ProjectsGrid 
+                projects={projects}
+                onProjectUpdate={handleProjectUpdate}
+                onProjectDelete={handleProjectDelete}
+              />
             )}
           </div>
         );
       
-      case 'users':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">User Management</h2>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <p className="text-gray-600">User management content coming soon...</p>
-            </div>
-          </div>
-        );
-      
-      case 'settings':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Settings</h2>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <p className="text-gray-600">Settings content coming soon...</p>
-            </div>
-          </div>
-        );
-      
       default:
-        return <DashboardContent />;
+        return (
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="w-full max-w-md md:max-w-lg bg-black border border-cyan-400/20 rounded-lg p-4 md:p-6"
+            >
+              <Lottie animationData={animationData} loop={true} />
+              <div className="text-center mt-4">
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
+                  Welcome to Admin Panel
+                </h2>
+                <p className="text-gray-400 text-sm md:text-base">
+                  Select a section from the sidebar to get started
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        );
     }
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar for desktop */}
-      <div className="hidden lg:block">
-        <AdminSidebar
-          isCollapsed={isSidebarCollapsed}
-          onToggle={toggleSidebar}
-          activeSection={activeSection}
-          onSectionChange={handleSectionChange}
-        />
-      </div>
+    <div className="flex h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
+      {/* Sidebar - Now fully responsive */}
+      <AdminSidebar
+        isCollapsed={isSidebarCollapsed}
+        onToggle={toggleSidebar}
+        activeSection={activeSection}
+        onSectionChange={handleSectionChange}
+      />
 
-      {/* Mobile sidebar overlay */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50"
-            onClick={() => setIsMobileMenuOpen(false)}
-          ></div>
-          <div className="fixed inset-y-0 left-0 z-50">
-            <AdminSidebar
-              isCollapsed={false}
-              onToggle={() => setIsMobileMenuOpen(false)}
-              activeSection={activeSection}
-              onSectionChange={handleSectionChange}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-       
+      {/* Main content area */}
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+        isMobile ? 'ml-0' : isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
+      }`}>
         
+        {/* Mobile Header */}
+        {isMobile && (
+          <div className="bg-black/40 backdrop-blur-lg border-b border-white/10 p-4 flex items-center justify-between lg:hidden">
+            <button
+              onClick={toggleSidebar}
+              className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <div className="text-white font-semibold">
+              {activeSection === 'projects' && 'Projects'}
+              {activeSection === 'profile' && 'Profile'}
+              {activeSection === 'dashboard' && 'Dashboard'}
+            </div>
+            <div className="w-10"></div> {/* Spacer for balance */}
+          </div>
+        )}
+
+        {/* Main Content */}
         <main className="flex-1 overflow-auto">
           {renderContent()}
         </main>

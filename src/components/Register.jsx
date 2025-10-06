@@ -10,6 +10,7 @@ const Register = () => {
     password: '',
     password_confirmation: ''
   });
+    const API_URL = import.meta.env.VITE_BACKEND_URL;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -27,8 +28,8 @@ const Register = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:8000/api/auth/register', formData);
-      
+      const response = await axios.post(`${API_URL}/api/auth/register`, formData);
+    
       if (response.data.success) {
         // Save token to localStorage
         localStorage.setItem('token', response.data.data.access_token);

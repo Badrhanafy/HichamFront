@@ -11,6 +11,7 @@ import Admin from './components/Admin'
 import CategoryProjects from './components/CategoryProjects'
 import Login from './components/Login'
 import Register from './components/Register'
+import ProjectDetails from './components/ProjectDetails'
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,9 @@ const router = createBrowserRouter([
     }    ,{
       path:"/register",
       element:<Register/>
+    },{
+      path:"/projects/project/:id",
+      element:<ProjectDetails/>
     }
 ])
 
