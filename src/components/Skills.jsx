@@ -152,7 +152,7 @@ const Skills = () => {
 
   const ToolCard = ({ tool, idx }) => (
     <center>
-      {/* for connit o sf ! */}
+      
            <motion.div
       variants={scaleIn(idx * 0.08)}
       whileHover={{ scale: 1.08, rotate: -3 }}
