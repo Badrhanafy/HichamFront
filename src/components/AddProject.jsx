@@ -216,18 +216,17 @@ const AddProject = ({ onProjectAdded, onClose }) => {
       });
 
       // Send all data to the API endpoint with credentials
-      const response = await axios.post(`${API_URL}/api/projects`, submitData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        withCredentials: true,
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setUploadProgress(progress);
-          }
-        }
-      });
+     const response = await axios.post(`${API_URL}/api/projects`, submitData, {
+  // ما تحددش Content-Type
+  withCredentials: false, // إلا ما كاينش authentication
+  onUploadProgress: (progressEvent) => {
+    if (progressEvent.total) {
+      const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+      setUploadProgress(progress);
+    }
+  }
+});
+
 
       setSuccessMessage('Project created successfully!');
       
