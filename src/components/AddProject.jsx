@@ -21,7 +21,7 @@ const AddProject = ({ onProjectAdded, onClose }) => {
     technologies: [],
     is_sport: 0
   });
-  
+  axios.defaults.withCredentials = true;
   const [currentTech, setCurrentTech] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
