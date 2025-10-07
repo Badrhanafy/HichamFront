@@ -1,6 +1,7 @@
 import React from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import axios from 'axios'
 import { Outlet } from 'react-router-dom'
 import { ScrollProgress, ScrollProgressProvider } from '@/components/animate-ui/primitives/animate/scroll-progress'
  axios.defaults.withCredentials = true;
