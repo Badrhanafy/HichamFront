@@ -332,69 +332,7 @@ function CategoryProjects() {
           </Link>
 
           {/* Content */}
-          <div className="flex-1 p-6">
-            <div className="flex flex-col h-full">
-              {/* Header */}
-              <div className="mb-4">
-                <Link 
-                  to={`/projects/project/${project.id}`}
-                  className="group/title"
-                >
-                  <h3 className="text-2xl font-black text-white mb-2 group-hover/title:text-cyan-300 transition-colors">
-                    {project.title}
-                  </h3>
-                </Link>
-                <div className="flex items-center gap-4 text-sm text-gray-300">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    {formatDate(project.created_at)}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Code className="w-4 h-4" />
-                    {projectTechnologies.length} technologies
-                  </div>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="mb-4 flex-1">
-                <p className="text-gray-400 leading-relaxed">
-                  {project.description}
-                </p>
-              </div>
-
-              {/* Technologies and Action */}
-              <div className="flex justify-between items-center">
-                <div className="flex flex-wrap gap-2">
-                  {projectTechnologies.slice(0, 6).map((tech, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-white/5 text-cyan-300 text-xs font-medium border border-cyan-400/20 backdrop-blur-sm"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                  {projectTechnologies.length > 6 && (
-                    <span className="px-2 py-1 bg-white/5 text-gray-400 text-xs border border-white/10">
-                      +{projectTechnologies.length - 6}
-                    </span>
-                  )}
-                </div>
-                
-                <Link
-                  to={`/projects/project/${project.id}`}
-                  className={`px-6 py-3 text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-105 flex items-center gap-2 group/btn ${
-                    isSports
-                      ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
-                      : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600'
-                  }`}
-                >
-                  EXPLORE
-                  <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-200" />
-                </Link>
-              </div>
-            </div>
-          </div>
+   
         </div>
       </motion.div>
     );

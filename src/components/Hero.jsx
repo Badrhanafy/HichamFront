@@ -13,6 +13,7 @@ import Lottie from 'lottie-react';
 import animationData from '../assets/Loading.json'
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import logo  from "../assets/images/logo.png"
 const Hero = () => {
   const [scrollDirection, setScrollDirection] = useState('down');
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -54,29 +55,31 @@ const Hero = () => {
   }, [lastScrollY]);
 
   // Loading animation component
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-blue-900">
-        <div className="absolute inset-0 z-0">
-          <DarkVeil />
-        </div>
-        <motion.div
-          className='w-24 h-24'
-        >
-          <Lottie animationData={animationData} loop={true} />
-        </motion.div>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mt-6 text-white text-xl font-light"
-        >
-          Loading Portfolio...
-        </motion.p>
-
+if (isLoading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-blue-900">
+      <div className="absolute inset-0 z-0">
+        <DarkVeil />
       </div>
-    );
-  }
+      <motion.div
+        className='w-24 h-24'
+        animate={{
+          rotateY: 360,
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <img src={logo} alt="Loading..." className="w-full h-full" />
+      </motion.div>
+    </div>
+  );
+}
 
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
@@ -128,7 +131,7 @@ const Hero = () => {
     transition={{ duration: 0.8, delay: 0.4 }}
     className="text-4xl md:text-6xl font-extrabold tracking-tight"
   >
-    <span className="block text-red-500">Creative </span>
+    <span className="block text-white">Creative </span>
     <span className="block bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
       Graphic Designer
     </span>
