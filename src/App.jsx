@@ -3,7 +3,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import { Outlet } from 'react-router-dom'
 import { ScrollProgress, ScrollProgressProvider } from '@/components/animate-ui/primitives/animate/scroll-progress'
-
+ axios.defaults.withCredentials = true;
 function App() {
   return (
     <div className="App bg-gradient-to-br from-white to-gray-50 text-gray-800 min-h-screen">
