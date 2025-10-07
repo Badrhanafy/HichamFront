@@ -361,18 +361,7 @@ const UpdateProject = ({ project, onClose, onUpdate }) => {
                     PROJECT IMAGE
                   </label>
                   
-                  {/* Image URL Input */}
-                  <div className="mb-4">
-                    <input
-                      type="url"
-                      name="image_url"
-                      value={formData.image_url}
-                      onChange={handleInputChange}
-                      className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 focus:outline-none focus:border-cyan-400 transition-colors duration-200 mb-2"
-                      placeholder="Or enter image URL"
-                    />
-                    <p className="text-gray-400 text-xs">Enter image URL or upload file below</p>
-                  </div>
+                 
 
                   {/* File Upload Button */}
                   <button

@@ -365,16 +365,11 @@ function CategoryProjects() {
           {/* Header */}
           <div className="max-w-7xl mx-auto mb-8">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 bg-white/5 backdrop-blur-lg border border-white/10">
-                <Sparkles className="w-6 h-6 text-cyan-400" />
-                <span className="text-cyan-400 font-medium text-sm uppercase tracking-wider">
-                  Logo Portfolio
-                </span>
-              </div>
-              <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent uppercase">
+            
+              <h1 className="text-6xl heads font-black text-white mb-4  bg-clip-text text-transparent uppercase">
                 Logo Designs
               </h1>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              <p className="text-xl texts text-gray-400 max-w-3xl mx-auto">
                 Explore our collection of professionally crafted logos with their original dimensions
               </p>
             </div>
@@ -385,7 +380,7 @@ function CategoryProjects() {
                 <div className="flex items-center gap-4">
                   {/* Search */}
                   <div className="relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-400 w-5 h-5" />
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white w-5 h-5" />
                     <input
                       type="text"
                       placeholder="Search logos..."
@@ -397,7 +392,7 @@ function CategoryProjects() {
                 </div>
 
                 {/* Results Count */}
-                <div className="text-cyan-400 font-medium">
+                <div className="text-white texts font-light">
                   {filteredProjects.length} LOGOS DISPLAYED
                 </div>
               </div>
@@ -472,7 +467,7 @@ function CategoryProjects() {
 
                     {/* Logo Title - Minimal */}
                     <div className="mt-3 text-center">
-                      <h3 className="text-sm font-medium text-white truncate">
+                      <h3 className="text-sm texts font-medium text-white truncate">
                         {logo.title}
                       </h3>
                     </div>
@@ -495,16 +490,11 @@ function CategoryProjects() {
         {/* Header */}
         <div className="max-w-7xl mx-auto mb-8">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 bg-white/5 backdrop-blur-lg border border-white/10">
-              <Sparkles className="w-6 h-6 text-cyan-400" />
-              <span className="text-cyan-400 font-medium text-sm uppercase tracking-wider">
-                {category.category} Portfolio
-              </span>
-            </div>
-            <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent uppercase">
+         
+            <h1 className="text-6xl heads font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent uppercase">
               {category.category} Projects
             </h1>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl texts text-gray-400 max-w-3xl mx-auto">
               Explore our curated collection of {category.category.toLowerCase()} projects built with cutting-edge technologies
             </p>
           </div>
@@ -517,10 +507,10 @@ function CategoryProjects() {
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Search projects, technologies..."
+                  placeholder="Search  projects, technologies..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:bg-white/10 transition-all duration-300"
+                  className="w-full texts pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:bg-white/10 transition-all duration-300"
                 />
               </div>
 
@@ -530,7 +520,7 @@ function CategoryProjects() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-400 focus:bg-white/10 appearance-none"
+                  className="w-full pl-12 pr-4 py-4 texts bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-400 focus:bg-white/10 appearance-none"
                 >
                   <option className='bg-slate-800' value="newest">Newest First</option>
                   <option className='bg-slate-800' value="oldest">Oldest First</option>
@@ -544,19 +534,20 @@ function CategoryProjects() {
                   onClick={() => setViewMode('grid')}
                   className={`flex-1 px-4 py-4 border transition-all duration-300 flex items-center justify-center gap-2 ${
                     viewMode === 'grid' 
-                      ? 'border-cyan-400 bg-cyan-400/10 text-cyan-400' 
+                      ? 'border-white/50 bg-cyan-400/10 text-cyan-400' 
                       : 'border-white/10 bg-white/5 text-gray-400 hover:border-cyan-400/50'
                   }`}
                 >
-                  <Grid3X3 className="w-4 h-4" />
+                  <Grid3X3 className="w-4 h-4 texts" />
                   Grid
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
                   className={`flex-1 px-4 py-4 border transition-all duration-300 flex items-center justify-center gap-2 ${
                     viewMode === 'list' 
-                      ? 'border-cyan-400 bg-cyan-400/10 text-cyan-400' 
+                      ? 'border-white/50 bg-cyan-400/10 text-cyan-400' 
                       : 'border-white/10 bg-white/5 text-gray-400 hover:border-cyan-400/50'
+
                   }`}
                 >
                   <List className="w-4 h-4" />
@@ -567,7 +558,7 @@ function CategoryProjects() {
 
             {/* Results Count */}
             <div className="mt-4 flex justify-between items-center">
-              <span className="text-cyan-400 font-medium">
+              <span className="text-white  font-light">
                 {filteredProjects.length} PROJECTS DISPLAYED • Sorted by {
                   sortBy === 'newest' ? 'Newest First' : 
                   sortBy === 'oldest' ? 'Oldest First' : 
@@ -617,25 +608,9 @@ function CategoryProjects() {
                   transition={{ duration: 0.6 }}
                   className="space-y-6"
                 >
-                  {/* Section Header */}
-                  <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 bg-cyan-500/10 backdrop-blur-lg border border-cyan-400/30">
-                      <Zap className="w-6 h-6 text-cyan-400" />
-                      <span className="text-cyan-400 font-medium text-sm uppercase tracking-wider">
-                        Social Media Designs
-                      </span>
-                    </div>
-                    <h2 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                      REGULAR SOCIAL MEDIA PROJECTS
-                    </h2>
-                    <p className="text-gray-400 max-w-2xl mx-auto">
-                      Creative social media designs for various industries and brands
-                    </p>
-                  </div>
-
                   {/* Projects Display */}
                   {viewMode === 'grid' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div className="grid texts grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                       {filteredRegularProjects.map((project, index) => (
                         <ProjectCard 
                           key={project.id} 

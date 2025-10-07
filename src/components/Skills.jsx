@@ -12,8 +12,6 @@ import { Helmet } from 'react-helmet-async';
 
 const Skills = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
-
-  /* ----------  DATA  ---------- */
   const skillCategories = [
     {
       title: 'Graphic Design',
@@ -34,17 +32,8 @@ const Skills = () => {
         { name: 'Character Design', lvl: 85 },
         { name: 'Icon Design', lvl: 90 },
       ],
-    },
-    {
-      title: 'Motion & Video',
-      color: 'from-cyan-500 to-green-500',
-      items: [
-        { name: 'Motion Graphics', lvl: 88 },
-        { name: 'Video Editing', lvl: 85 },
-        { name: '2D Animation', lvl: 83 },
-        { name: 'Visual Effects', lvl: 80 },
-      ],
-    },
+    }
+    
   ];
 
   const softSkills = [
@@ -103,10 +92,8 @@ const Skills = () => {
     { name: 'Photoshop', icon: photoshop, color: '#31A8FF', category: 'Raster' },
     { name: 'InDesign', icon: indesign, color: '#FF9A00', category: 'Layout' },
     { name: 'After Effects', icon: aftereffect, color: '#D291FF', category: 'Motion' },
-    { name: 'Premiere Pro', icon: primerepro, color: '#EA77FF', category: 'Video' },
-   /*  { name: 'Figma', icon: figma, color: '#F24E1E', category: 'UI/UX' }, */
-    { name: 'Procreate', icon: '✏️', color: '#000000', category: 'Digital Art' },
-    { name: 'Blender', icon: '🔄', color: '#FF6B35', category: '3D' },
+ /*    { name: 'Premiere Pro', icon: primerepro, color: '#EA77FF', category: 'Video' }, */
+  
   ];
 
   /* ----------  ANIMATIONS  ---------- */
@@ -239,20 +226,20 @@ const Skills = () => {
         </motion.div>
 
         {/* Technical Skills Grid */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid lg:grid-cols-2 gap-2 mb-16">
           {skillCategories.map((cat, idx) => (
             <motion.div
               key={cat.title}
               initial="hidden"
               animate={inView ? 'visible' : 'hidden'}
               variants={fadeIn(idx === 0 ? -30 : 30, 0.15 + idx * 0.15)}
-              className="bg-gray-900/30 border border-white/10 rounded-2xl p-6 backdrop-blur-md"
+              className="bg-gray-900/30 border w-3/4 border-white/10 rounded-2xl p-6 backdrop-blur-md"
             >
-              <h3 className={`text-2xl font-bold mb-6 bg-gradient-to-r ${cat.color} bg-clip-text text-transparent`}>
+              <h3 className={`text-2xl heads font-bold mb-6 bg-gradient-to-r ${cat.color} bg-clip-text text-transparent`}>
                 {cat.title}
               </h3>
               {cat.items.map((s) => (
-                <ProgressBar key={s.name} label={s.name} value={s.lvl} color={cat.color} />
+                <ProgressBar key={s.name} className="texts" label={s.name} value={s.lvl} color={cat.color} />
               ))}
             </motion.div>
           ))}
@@ -265,35 +252,37 @@ const Skills = () => {
           variants={fadeIn(30, 0.4)}
           className="mb-16"
         >
-          <h3 className="text-2xl font-bold text-gray-100 mb-6 text-center">Professional Skills</h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <h3 className="text-2xl heads font-bold text-gray-100 mb-6 text-center">Professional Skills</h3>
+          <div className="grid texts sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {softSkills.map((category, index) => (
-              <SoftSkillCategory key={category.category} category={category} index={index} />
+              <SoftSkillCategory key={category.category} className="texts" category={category} index={index} />
             ))}
           </div>
         </motion.div>
 
         {/* Tools Grid */}
-        <motion.div
+        <center className=''>
+             <motion.div
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
           variants={fadeIn(30, 0.5)}
-          className="mb-16"
+          className="mb-16 "
         >
-          <h3 className="text-2xl font-bold text-gray-100 mb-6 text-center">Design Tools</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          <h3 className="text-2xl text-start font-bold heads text-gray-100 mb-6 ">Design Tools</h3>
+          <div className="grid heads grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
             {tools.map((t, i) => (
               <ToolCard key={t.name} tool={t} idx={i} />
             ))}
           </div>
         </motion.div>
+        </center>
 
         {/* Philosophy Card */}
         <motion.div
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
           variants={fadeIn(30, 0.6)}
-          className="p-8 rounded-2xl bg-gradient-to-br from-orange-900/30 to-purple-900/30 border border-white/10 backdrop-blur-md text-center"
+          className="p-8 rounded-2xl texts bg-gradient-to-br from-orange-900/30 to-purple-900/30 border border-white/10 backdrop-blur-md text-center"
         >
           <h4 className="text-xl font-semibold text-gray-100 mb-3">Design Philosophy</h4>
           <p className="text-gray-300 leading-relaxed">

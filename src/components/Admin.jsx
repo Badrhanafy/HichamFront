@@ -8,7 +8,8 @@ import ProfileSection from './ProfileSection';
 import Lottie from 'lottie-react';
 import animationData from '../assets/Hello.json';
 import { motion } from 'framer-motion';
-
+import DarkVeil from './DarkVeil';
+import logo from "../assets/images/logo.png"
 const Admin = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -17,6 +18,23 @@ const Admin = () => {
   const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const API_URL = import.meta.env.VITE_BACKEND_URL;
+ 
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    const user = userData ? JSON.parse(userData) : null;
+    const role = user?.role;
+
+    if (!token || role !== "admin") {
+      window.location.href = "/";
+    } else {
+      setLoading(false); // ok, user logged in
+    }
+  }, []);
+
+
+
   // Check screen size for responsive behavior
   useEffect(() => {
     const checkScreenSize = () => {
@@ -134,7 +152,31 @@ const Admin = () => {
         );
     }
   };
-
+if (loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-blue-900">
+      <div className="absolute inset-0 z-0">
+        <DarkVeil />
+      </div>
+      <motion.div
+        className='w-24 h-24'
+        animate={{
+          rotateY: 360,
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <img src={logo} alt="Loading..." className="w-full h-full" />
+      </motion.div>
+    </div>
+  );
+}
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
       {/* Sidebar - Now fully responsive */}

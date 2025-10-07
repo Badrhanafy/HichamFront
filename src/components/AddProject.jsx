@@ -174,11 +174,11 @@ const AddProject = ({ onProjectAdded, onClose }) => {
         return;
       }
 
-      if (!formData.description.trim()) {
+    /*   if (!formData.description.trim()) {
         setErrors({ description: ['Project description is required'] });
         setLoading(false);
         return;
-      }
+      } */
 
       if (!formData.category) {
         setErrors({ category: ['Project category is required'] });

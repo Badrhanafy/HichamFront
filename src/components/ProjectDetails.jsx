@@ -114,6 +114,8 @@ const ProjectDetails = () => {
   };
 
   const getCategoryIcon = (category) => {
+    if (!category) return <Code className="w-5 h-5" />;
+    
     const icons = {
       'Web Development': <Globe className="w-5 h-5" />,
       'Mobile App': <Smartphone className="w-5 h-5" />,
@@ -133,6 +135,16 @@ const ProjectDetails = () => {
       actions: 'border-white/30'
     };
     return colors[section] || 'border-gray-400';
+  };
+
+  // Helper function to check if field exists and has value
+  const hasField = (field) => {
+    return project && project[field] && project[field].toString().trim() !== '';
+  };
+
+  // Helper function to get field value safely
+  const getField = (field, defaultValue = '') => {
+    return hasField(field) ? project[field] : defaultValue;
   };
 
   if (loading) {
@@ -183,8 +195,8 @@ const ProjectDetails = () => {
       </div>
 
       <Helmet>
-        <title>{project.title} | EL HACHIMI</title>
-        <meta name="description" content={project.description} />
+        <title>{getField('title', 'Project')} | EL HACHIMI</title>
+        <meta name="description" content={getField('description', 'Project details')} />
       </Helmet>
 
       {/* Header */}
@@ -237,76 +249,74 @@ const ProjectDetails = () => {
           transition={{ duration: 0.6 }}
           className="relative overflow-hidden mb-6 sm:mb-8 border rounded-3xl border-white/30 bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-sm"
         >
-          <div 
-            className={`relative w-full h-64 sm:h-96 md:h-[600px] transition-all duration-500 ${
-              isImageHovered ? 'cursor-zoom-in' : 'cursor-default'
-            }`}
-            onMouseEnter={() => setIsImageHovered(true)}
-            onMouseLeave={() => setIsImageHovered(false)}
-            onClick={() => setIsImageZoomed(true)}
-          >
-            <img
-              src={project.image_url}
-              alt={project.title}
-              className="w-full h-full object-contain bg-gradient-to-br from-gray-900 to-black"
-              onError={(e) => {
-                e.target.src = `https://via.placeholder.com/1200x600/1f2937/9ca3af?text=${encodeURIComponent(project.title)}`;
-              }}
-            />
-            
-            {/* Mobile-optimized Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-            
-            {/* Project Name Overlay - Mobile Optimized */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-           {/*    <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-2xl sm:text-4xl md:text-6xl font-black text-white text-center leading-tight"
-              >
-                {project.title}
-              </motion.h1> */}
-            </div>
+          {hasField('image_url') && (
+            <div 
+              className={`relative w-full h-64 sm:h-96 md:h-[600px] transition-all duration-500 ${
+                isImageHovered ? 'cursor-zoom-in' : 'cursor-default'
+              }`}
+              onMouseEnter={() => setIsImageHovered(true)}
+              onMouseLeave={() => setIsImageHovered(false)}
+              onClick={() => setIsImageZoomed(true)}
+            >
+              <img
+                src={project.image_url}
+                alt={getField('title', 'Project')}
+                className="w-full h-full object-contain bg-gradient-to-br from-gray-900 to-black"
+                onError={(e) => {
+                  e.target.src = `https://via.placeholder.com/1200x600/1f2937/9ca3af?text=${encodeURIComponent(getField('title', 'Project'))}`;
+                }}
+              />
+              
+              {/* Mobile-optimized Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+              
+              {/* Project Name Overlay - Mobile Optimized */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+                {/* Project title can be added here if needed */}
+              </div>
 
-            {/* Hover Overlay - Hidden on mobile */}
-            {isImageHovered && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="absolute inset-0 bg-black/40 hidden sm:flex items-center justify-center"
-              >
-                <div className="bg-black/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 flex items-center gap-3 border border-indigo-500">
-                  <ZoomIn className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
-                  <span className="text-white font-semibold text-sm sm:text-base">Click to explore</span>
-                </div>
-              </motion.div>
-            )}
-          </div>
+              {/* Hover Overlay - Hidden on mobile */}
+              {isImageHovered && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute inset-0 bg-black/40 hidden sm:flex items-center justify-center"
+                >
+                  <div className="bg-black/70 backdrop-blur-sm rounded-2xl p-4 sm:p-6 flex items-center gap-3 border border-indigo-500">
+                    <ZoomIn className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
+                    <span className="text-white font-semibold text-sm sm:text-base">Click to explore</span>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          )}
         </motion.div>
 
         {/* Content Grid - Mobile First */}
         <div className="space-y-6 sm:space-y-8 lg:grid  lg:grid-cols-3 lg:gap-8 lg:space-y-0">
           {/* Main Content */}
           <div className="lg:col-span-2  space-y-6 sm:space-y-8">
-            {/* Project Overview */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className={`bg-black/40 backdrop-blur-lg rounded-3xl border ${getSectionBorderColor('overview')}   p-4 sm:p-6 md:p-8`}
-            >
-              <div className="flex items-center  gap-3 mb-4 sm:mb-6">
-                <div className="p-2 bg-cyan-400/20 rounded-lg sm:">
-                  <Code className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
+            {/* Project Overview - Only show if description exists */}
+            {hasField('description') && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className={`bg-black/40 backdrop-blur-lg rounded-3xl border ${getSectionBorderColor('overview')}   p-4 sm:p-6 md:p-8`}
+              >
+                <div className="flex items-center  gap-3 mb-4 sm:mb-6">
+                  <div className="p-2 bg-cyan-400/20 rounded-lg sm:">
+                    <Code className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
+                  </div>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl  font-black text-white heads">Project Overview</h2>
                 </div>
-                <h2 className="text-xl sm:text-2xl md:text-3xl  font-black text-white heads">Project Overview</h2>
-              </div>
-              <p className="text-gray-300 texts text-base sm:text-lg leading-relaxed">
-                {project.description}
-              </p>
-            </motion.div>
+                <p className="text-gray-300 texts text-base sm:text-lg leading-relaxed">
+                  {project.description}
+                </p>
+              </motion.div>
+            )}
 
-            {/* Technologies */}
+            {/* Technologies - Only show if technologies exist */}
             {technologies.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -349,41 +359,54 @@ const ProjectDetails = () => {
 
           {/* Sidebar - Mobile Optimized */}
           <div className="space-y-4 sm:space-y-6">
-            {/* Project Details Card */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 }}
-              className={`bg-black/40 backdrop-blur-lg rounded-3xl border ${getSectionBorderColor('details')}   p-4 sm:p-6`}
-            >
-              <h3 className="text-lg sm:text-xl font-black text-white mb-4 sm:mb-6 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
-                Project Details
-              </h3>
-              <div className="space-y-3 sm:space-y-4">
-                <div className="p-3 sm:p-4 bg-white/5  sm:rounded-2xl border border-white/10">
-                  <p className="text-white text-xs sm:text-sm font-bold uppercase tracking-wider mb-1 heads">Category</p>
-                  <p className="text-white   text-sm sm:text-base flex items-center texts gap-2" style={{fontSize:"2vh",marginTop:"-6px"}}>
-                    {getCategoryIcon(project.category)}
-                    {project.category}
-                  </p>
+            {/* Project Details Card - Only show if we have any details */}
+            {(hasField('category') || hasField('created_at') || hasField('updated_at')) && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 }}
+                className={`bg-black/40 backdrop-blur-lg rounded-3xl border ${getSectionBorderColor('details')}   p-4 sm:p-6`}
+              >
+                <h3 className="text-lg sm:text-xl font-black text-white mb-4 sm:mb-6 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
+                  Project Details
+                </h3>
+                <div className="space-y-3 sm:space-y-4">
+                  {/* Category - Only show if exists */}
+                  {hasField('category') && (
+                    <div className="p-3 sm:p-4 bg-white/5  sm:rounded-2xl border border-white/10">
+                      <p className="text-white text-xs sm:text-sm font-bold uppercase tracking-wider mb-1 heads">Category</p>
+                      <p className="text-white   text-sm sm:text-base flex items-center texts gap-2" style={{fontSize:"2vh",marginTop:"-6px"}}>
+                        {getCategoryIcon(project.category)}
+                        {project.category}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Created Date - Only show if exists */}
+                  {hasField('created_at') && (
+                    <div className="p-3 sm:p-4 bg-white/5  sm:rounded-2xl border border-white/10">
+                      <p className="text-white text-xs sm:text-sm font-bold uppercase tracking-wider heads mb-1" >Created</p>
+                      <p className="text-white  font-light sm:text-base" style={{fontSize:"2vh",marginTop:"-6px"}}>
+                        {new Date(project.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Updated Date - Only show if exists */}
+                  {hasField('updated_at') && (
+                    <div className="p-3 sm:p-4 bg-white/5  sm:rounded-2xl border border-white/10">
+                      <p className="text-white text-xs sm:text-sm font-bold uppercase tracking-wider mb-1 heads">Last Updated</p>
+                      <p className="text-white  texts text-sm sm:text-base " style={{fontSize:"2vh",marginTop:"-6px"}}>
+                        {new Date(project.updated_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                <div className="p-3 sm:p-4 bg-white/5  sm:rounded-2xl border border-white/10">
-                  <p className="text-white text-xs sm:text-sm font-bold uppercase tracking-wider heads mb-1" >Created</p>
-                  <p className="text-white  font-light sm:text-base" style={{fontSize:"2vh",marginTop:"-6px"}}>
-                    {new Date(project.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="p-3 sm:p-4 bg-white/5  sm:rounded-2xl border border-white/10">
-                  <p className="text-white text-xs sm:text-sm font-bold uppercase tracking-wider mb-1 heads">Last Updated</p>
-                  <p className="text-white  texts text-sm sm:text-base " style={{fontSize:"2vh",marginTop:"-6px"}}>
-                    {new Date(project.updated_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
 
-            {/* Action Buttons - Removed Download */}
+            {/* Action Buttons */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -417,9 +440,9 @@ const ProjectDetails = () => {
         </div>
       </main>
 
-      {/* Zoomed Image Modal - Mobile Optimized */}
+      {/* Zoomed Image Modal - Only show if image exists */}
       <AnimatePresence>
-        {isImageZoomed && (
+        {isImageZoomed && hasField('image_url') && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -445,17 +468,17 @@ const ProjectDetails = () => {
               <div className="max-h-[90vh] max-w-[90vw] overflow-auto   border-1 border-gray-500 bg-black/50 backdrop-blur-sm">
                 <img
                   src={project.image_url}
-                  alt={project.title}
+                  alt={getField('title', 'Project')}
                   className="w-full h-auto object-contain"
                   onError={(e) => {
-                    e.target.src = `https://via.placeholder.com/1200x600/1f2937/9ca3af?text=${encodeURIComponent(project.title)}`;
+                    e.target.src = `https://via.placeholder.com/1200x600/1f2937/9ca3af?text=${encodeURIComponent(getField('title', 'Project'))}`;
                   }}
                 />
               </div>
               
               <div className="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row justify-between items-center gap-2">
                 <span className="text-white text-sm bg-black/70 backdrop-blur-sm px-3 py-2 rounded-full border border-white/20 text-center w-full sm:w-auto">
-                  {project.title}
+                  {getField('title', 'Project')}
                 </span>
                 <span className="text-white text-xs bg-black/70 backdrop-blur-sm px-3 py-2 rounded-full border border-white/20 text-center w-full sm:w-auto">
                   Press ESC or tap outside to close
@@ -469,4 +492,4 @@ const ProjectDetails = () => {
   );
 };
 
-export default ProjectDetails
+export default ProjectDetails;

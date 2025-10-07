@@ -254,20 +254,12 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
   }, [selectedProject]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-4">
+    <div className="min-h-screen texts bg-gradient-to-br from-slate-900 via-gray-900 to-black p-4">
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 bg-white/5 backdrop-blur-lg border border-white/10">
-            <Sparkles className="w-6 h-6 text-cyan-400" />
-            <span className="text-cyan-400 font-medium text-sm uppercase tracking-wider">Project Portfolio</span>
-            {isAdmin && (
-              <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wider border border-red-500/30">
-                ADMIN MODE
-              </span>
-            )}
-          </div>
-          <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+          
+          <h1 className="text-6xl heads font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
             DIGITAL CREATIONS
           </h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
@@ -321,7 +313,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
           {/* Results Count */}
           <div className="mt-4 flex justify-between items-center">
             <span className="text-cyan-400 font-medium">
-              {filteredProjects.length} PROJECTS DISPLAYED
+              {filteredProjects?.length} PROJECTS DISPLAYED
             </span>
             {(searchTerm || selectedCategory !== 'all') && (
               <button
@@ -338,7 +330,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
       {/* Projects Grid */}
       <div className="max-w-7xl mx-auto">
-        {filteredProjects.length === 0 ? (
+        {filteredProjects?.length === 0 ? (
           <div className="text-center py-24">
             <div className="text-cyan-400 mb-6">
               <Search className="w-20 h-20 mx-auto opacity-50" />
@@ -427,7 +419,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
                         </div>
                         <div className="flex items-center gap-1">
                           <Code className="w-3 h-3" />
-                          {projectTechnologies.length} tech
+                          {projectTechnologies?.length} tech
                         </div>
                       </div>
                     </div>
@@ -442,7 +434,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
                       }`}>
                         {project.description}
                       </p>
-                      {project.description.length > 100 && (
+                      {project.description?.length > 100 && (
                         <button
                           onClick={() => toggleDescription(project.id)}
                           className="text-cyan-400 hover:text-cyan-300 text-xs font-medium mt-2 flex items-center gap-1 transition-colors duration-200"
@@ -464,7 +456,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
                     <div className="mb-4">
                       <div className="flex items-center gap-2 mb-3">
                         <Zap className="w-4 h-4 text-cyan-400" />
-                        <span className="text-sm font-bold text-cyan-400 uppercase tracking-wider">Tech Stack</span>
+                        <span className="text-sm font-bold text-cyan-400 uppercase tracking-wider">graphic design</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {projectTechnologies.slice(0, 3).map((tech, index) => (
@@ -475,9 +467,9 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
                             {tech}
                           </span>
                         ))}
-                        {projectTechnologies.length > 3 && (
+                        {projectTechnologies?.length > 3 && (
                           <span className="px-3 py-1 bg-white/5 text-gray-400 text-xs border border-white/10">
-                            +{projectTechnologies.length - 3}
+                            +{projectTechnologies?.length - 3}
                           </span>
                         )}
                       </div>
@@ -613,12 +605,8 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
                   {/* Action Buttons */}
                   <div className="flex gap-4 pt-6">
-                    <button className="flex-1 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold uppercase tracking-wider hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105">
-                      VIEW LIVE DEMO
-                    </button>
-                    <button className="px-6 py-4 border border-cyan-400 text-cyan-400 font-bold uppercase tracking-wider hover:bg-cyan-400 hover:text-black transition-all duration-300 transform hover:scale-105">
-                      SOURCE CODE
-                    </button>
+                    
+                    
                     {isAdmin && (
                       <button 
                         onClick={() => {
