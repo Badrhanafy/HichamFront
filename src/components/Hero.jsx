@@ -174,9 +174,7 @@ if (isLoading) {
     transition={{ duration: 0.8, delay: 1.0 }}
     className="mt-12 md:mt-16 flex justify-center md:justify-start space-x-6"
   >
-    <a href="#" className="text-white hover:text-yellow-400 transition-colors duration-300">
-      <Github className="h-6 w-6" />
-    </a>
+    
     <a href="#" className="text-white hover:text-yellow-400 transition-colors duration-300">
       <Linkedin className="h-6 w-6" />
     </a>

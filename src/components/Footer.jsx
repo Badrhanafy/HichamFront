@@ -61,9 +61,7 @@ const Footer = () => {
 
         {/* Bottom */}
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm flex items-center">
-            © {currentYear} DesignStudio. Made with <Heart className="h-4 w-4 mx-1 text-red-400" /> by Creative Designer
-          </p>
+           &copy; EL HACHIMI 2026
           <button
             onClick={scrollToTop}
             className="mt-4 md:mt-0 flex items-center text-gray-400 hover:text-white"
