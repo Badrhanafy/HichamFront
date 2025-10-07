@@ -35,32 +35,11 @@ function CategoryProjects() {
   // Check if current category is logo
   const isLogoCategory = category.category?.toLowerCase() === 'logo';
 
-  // Check if we should show sports projects separately
-  const showSportsSeparately = category.category?.toLowerCase() === 'social-media' && 
-    projects.some(project => project.is_sport === 1);
-
-  // Separate projects based on is_sport
-  const sportsProjects = projects.filter(project => project.is_sport === 1);
-  const regularSocialMediaProjects = projects.filter(project => 
-    project.is_sport !== 1 && project.category?.toLowerCase() === 'social-media'
-  );
-
-  // Filter projects based on search term
-  const filteredSportsProjects = sportsProjects.filter(project =>
-    project.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.technologies?.some(tech => 
-      typeof tech === 'string' && tech.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
-
-  const filteredRegularProjects = regularSocialMediaProjects.filter(project =>
-    project.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.technologies?.some(tech => 
-      typeof tech === 'string' && tech.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+  // Separate projects into regular and sports
+  const regularProjects = projects.filter(project => project.is_sport != 1);
+  const sportsProjects = projects.filter(project => project.is_sport == 1);
+  const hasSportsProjects = sportsProjects.length > 0;
+  const hasRegularProjects = regularProjects.length > 0;
 
   // Filter and sort projects
   useEffect(() => {
@@ -93,6 +72,10 @@ function CategoryProjects() {
 
     setFilteredProjects(filtered);
   }, [searchTerm, projects, sortBy]);
+
+  // Filter regular and sports projects separately for display
+  const filteredRegularProjects = filteredProjects.filter(project => project.is_sport != 1);
+  const filteredSportsProjects = filteredProjects.filter(project => project.is_sport == 1);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -165,21 +148,20 @@ function CategoryProjects() {
     });
   };
 
-  // Project Card Component for Grid View
+  // Project Card Component
   const ProjectCard = ({ project, index, isSports = false }) => {
     const projectTechnologies = getTechnologies(project);
     const categoryColor = getCategoryColor(project.category);
     
     return (
       <motion.div
-        key={project.id}
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
-        className={`group relative bg-transparent backdrop-blur-lg border transition-all duration-500 overflow-hidden h-full flex flex-col ${
+        className={`group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden h-full flex flex-col ${
           isSports 
-            ? 'border-orange-400 hover:border-orange-500' 
-            : 'border-cyan-400/50 hover:border-cyan-400'
+            ? 'border-orange-400/30 hover:border-orange-400/50' 
+            : 'border-white/10 hover:border-cyan-400/30'
         }`}
       >
         {/* Sports Project Badge */}
@@ -203,7 +185,8 @@ function CategoryProjects() {
           className="relative overflow-hidden bg-gray-800 block flex-1"
           style={{ 
             width: '100%', 
-            height: '400px'
+            height: '400px',
+            aspectRatio: '1080/1440'
           }}
         >
           <img
@@ -216,61 +199,15 @@ function CategoryProjects() {
           />
         </Link>
 
-        {/* Project Content */}
-        <div className="p-6">
-          <div className="mb-4">
-            <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
-            <p className="text-gray-400 text-sm leading-relaxed line-clamp-3">
-              {project.description}
-            </p>
-          </div>
-
-          {/* Technologies */}
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Zap className="w-4 h-4 text-cyan-400" />
-              <span className="text-sm font-bold text-cyan-400 uppercase tracking-wider">Tech Stack</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {projectTechnologies.slice(0, 4).map((tech, index) => (
-                <span
-                  key={index}
-                  className="px-2 py-1 bg-white/5 text-cyan-300 text-xs font-medium border border-cyan-400/20 backdrop-blur-sm"
-                >
-                  {tech}
-                </span>
-              ))}
-              {projectTechnologies.length > 4 && (
-                <span className="px-2 py-1 bg-white/5 text-gray-400 text-xs border border-white/10">
-                  +{projectTechnologies.length - 4}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Action Button */}
-          <Link
-            to={`/projects/project/${project.id}`}
-            className={`w-full py-3 text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 group/btn ${
-              isSports
-                ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
-                : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600'
-            }`}
-          >
-            VIEW PROJECT DETAILS
-            <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-200" />
-          </Link>
-        </div>
-
         {/* Hover Border Effect */}
         <div className={`absolute inset-0 border-2 border-transparent group-hover:border-${
-          isSports ? 'orange-400/50' : 'cyan-400/50'
+          isSports ? 'orange-400/20' : 'cyan-400/20'
         } transition-all duration-500 pointer-events-none`} />
       </motion.div>
     );
   };
 
-  // Project List Item Component for List View
+  // Project List Item Component
   const ProjectListItem = ({ project, index, isSports = false }) => {
     const projectTechnologies = getTechnologies(project);
     const categoryColor = getCategoryColor(project.category);
@@ -281,10 +218,10 @@ function CategoryProjects() {
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
-        className={`group bg-transparent backdrop-blur-lg border transition-all duration-500 overflow-hidden ${
+        className={`group bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden ${
           isSports 
-            ? 'border-orange-400 hover:border-orange-500' 
-            : 'border-cyan-400/50 hover:border-cyan-400'
+            ? 'border-orange-400/30 hover:border-orange-400/50' 
+            : 'border-white/10 hover:border-cyan-400/30'
         }`}
       >
         <div className="flex flex-col md:flex-row">
@@ -294,7 +231,8 @@ function CategoryProjects() {
             className="md:w-80 relative flex-shrink-0 block"
             style={{ 
               width: '100%', 
-              height: '300px'
+              height: '300px',
+              aspectRatio: '1080/1440'
             }}
           >
             <img
@@ -332,7 +270,69 @@ function CategoryProjects() {
           </Link>
 
           {/* Content */}
-   
+          <div className="flex-1 p-6">
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="mb-4">
+                <Link 
+                  to={`/projects/project/${project.id}`}
+                  className="group/title"
+                >
+                  <h3 className="text-2xl font-black text-white mb-2 group-hover/title:text-cyan-300 transition-colors">
+                    {project.title}
+                  </h3>
+                </Link>
+                <div className="flex items-center gap-4 text-sm text-gray-300">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {formatDate(project.created_at)}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Code className="w-4 h-4" />
+                    {projectTechnologies.length} technologies
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mb-4 flex-1">
+                <p className="text-gray-400 leading-relaxed">
+                  {project.description}
+                </p>
+              </div>
+
+              {/* Technologies and Action */}
+              <div className="flex justify-between items-center">
+                <div className="flex flex-wrap gap-2">
+                  {projectTechnologies.slice(0, 6).map((tech, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-white/5 text-cyan-300 text-xs font-medium border border-cyan-400/20 backdrop-blur-sm"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                  {projectTechnologies.length > 6 && (
+                    <span className="px-2 py-1 bg-white/5 text-gray-400 text-xs border border-white/10">
+                      +{projectTechnologies.length - 6}
+                    </span>
+                  )}
+                </div>
+                
+                <Link
+                  to={`/projects/project/${project.id}`}
+                  className={`px-6 py-3 text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-105 flex items-center gap-2 group/btn ${
+                    isSports
+                      ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
+                      : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600'
+                  }`}
+                >
+                  EXPLORE
+                  <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-200" />
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </motion.div>
     );
@@ -463,6 +463,10 @@ function CategoryProjects() {
                             e.target.src = `https://via.placeholder.com/200x100/0f172a/1e293b?text=${encodeURIComponent(logo.title || 'Logo')}`;
                           }}
                         />
+                        
+                        {/* Hover Overlay */}
+                        <div className="absolute inset-0 bg-cyan-400/0 group-hover:bg-cyan-400/5 transition-all duration-300 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        </div>
                       </div>
                     </Link>
 
@@ -482,235 +486,7 @@ function CategoryProjects() {
     );
   }
 
-  // Render for social-media category with sports projects
-  if (showSportsSeparately) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
-        <Navbar />
-        
-        <div className="p-4 pt-24">
-          {/* Header */}
-          <div className="max-w-7xl mx-auto mb-8">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 bg-white/5 backdrop-blur-lg border border-white/10">
-                <Sparkles className="w-6 h-6 text-cyan-400" />
-                <span className="text-cyan-400 font-medium text-sm uppercase tracking-wider">
-                  Social Media Portfolio
-                </span>
-              </div>
-              <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent uppercase">
-                Social Media Projects
-              </h1>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                Explore our curated collection of social media projects and sports designs
-              </p>
-            </div>
-
-            {/* Sports Designs Section */}
-            {sportsProjects.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="bg-transparent backdrop-blur-lg border border-white p-6 mb-8 rounded-xl"
-              >
-                <div className="flex flex-col md:flex-row items-center justify-between">
-                  <div className="flex items-center gap-4 mb-4 md:mb-0">
-                    <div className="flex items-center gap-3">
-                      <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
-                        <Trophy className="w-8 h-8 text-white" />
-                      </div>
-                      <div className="text-center md:text-left">
-                        <h2 className="text-2xl md:text-3xl font-black text-white bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-                          SPORTS DESIGNS
-                        </h2>
-                        <p className="text-orange-300/80 text-sm font-medium">
-                          Championship-level social media designs for sports brands
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-center md:text-right">
-                    <div className="flex items-center gap-2 text-orange-400 justify-center md:justify-end">
-                      <Target className="w-5 h-5" />
-                      <span className="font-bold text-lg">{sportsProjects.length}</span>
-                      <span className="text-orange-300/80 font-medium">SPORTS PROJECTS</span>
-                    </div>
-                    <p className="text-orange-300/60 text-sm mt-1">
-                      High-performance social media content
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Control Panel */}
-            <div className="bg-black/40 backdrop-blur-lg border border-white/10 p-6 mb-8">
-              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                {/* Search */}
-                <div className="md:col-span-2 relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Search projects, technologies..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:bg-white/10 transition-all duration-300"
-                  />
-                </div>
-
-                {/* Sort */}
-                <div className="relative">
-                  <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-400 w-5 h-5" />
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-400 focus:bg-white/10 appearance-none"
-                  >
-                    <option className='bg-slate-800' value="newest">Newest First</option>
-                    <option className='bg-slate-800' value="oldest">Oldest First</option>
-                    <option className='bg-slate-800' value="title">Sort by Title</option>
-                  </select>
-                </div>
-
-                {/* View Mode Toggle */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`flex-1 px-4 py-4 border transition-all duration-300 flex items-center justify-center gap-2 ${
-                      viewMode === 'grid' 
-                        ? 'border-cyan-400 bg-cyan-400/10 text-cyan-400' 
-                        : 'border-white/10 bg-white/5 text-gray-400 hover:border-cyan-400/50'
-                    }`}
-                  >
-                    <Grid3X3 className="w-4 h-4" />
-                    Grid
-                  </button>
-                  <button
-                    onClick={() => setViewMode('list')}
-                    className={`flex-1 px-4 py-4 border transition-all duration-300 flex items-center justify-center gap-2 ${
-                      viewMode === 'list' 
-                        ? 'border-cyan-400 bg-cyan-400/10 text-cyan-400' 
-                        : 'border-white/10 bg-white/5 text-gray-400 hover:border-cyan-400/50'
-                    }`}
-                  >
-                    <List className="w-4 h-4" />
-                    List
-                  </button>
-                </div>
-              </div>
-
-              {/* Results Count */}
-              <div className="mt-4 flex justify-between items-center">
-                <span className="text-cyan-400 font-medium">
-                  {filteredSportsProjects.length + filteredRegularProjects.length} PROJECTS DISPLAYED • Sorted by {
-                    sortBy === 'newest' ? 'Newest First' : 
-                    sortBy === 'oldest' ? 'Oldest First' : 
-                    'Title'
-                  }
-                </span>
-                {(searchTerm) && (
-                  <button
-                    onClick={clearFilters}
-                    className="text-gray-400 hover:text-white text-sm font-medium flex items-center gap-2 transition-colors duration-200"
-                  >
-                    <X className="w-4 h-4" />
-                    CLEAR FILTERS
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Projects Layout */}
-          <div className="max-w-7xl mx-auto">
-            {(filteredSportsProjects.length === 0 && filteredRegularProjects.length === 0) ? (
-              <div className="text-center py-24">
-                <div className="text-cyan-400 mb-6">
-                  <Search className="w-20 h-20 mx-auto opacity-50" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-3">NO PROJECTS FOUND</h3>
-                <p className="text-gray-400 max-w-md mx-auto">
-                  {searchTerm ? 'Try adjusting your search criteria' : 'No projects found in this category'}
-                </p>
-                {searchTerm && (
-                  <button 
-                    onClick={clearFilters}
-                    className="mt-6 px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold uppercase tracking-wider hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105"
-                  >
-                    CLEAR SEARCH
-                  </button>
-                )}
-              </div>
-            ) : (
-              <>
-                {/* Sports Projects */}
-                {filteredSportsProjects.length > 0 && (
-                  <div className="mb-12">
-                    {viewMode === 'grid' ? (
-                      <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {filteredSportsProjects.map((project, index) => (
-                          <ProjectCard 
-                            key={project.id} 
-                            project={project} 
-                            index={index} 
-                            isSports={true}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {filteredSportsProjects.map((project, index) => (
-                          <ProjectListItem 
-                            key={project.id} 
-                            project={project} 
-                            index={index} 
-                            isSports={true}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Regular Social Media Projects */}
-                {filteredRegularProjects.length > 0 && (
-                  <div>
-                    {viewMode === 'grid' ? (
-                      <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {filteredRegularProjects.map((project, index) => (
-                          <ProjectCard 
-                            key={project.id} 
-                            project={project} 
-                            index={index} 
-                            isSports={false}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {filteredRegularProjects.map((project, index) => (
-                          <ProjectListItem 
-                            key={project.id} 
-                            project={project} 
-                            index={index} 
-                            isSports={false}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Original render for other categories
+  // Original render for other categories with organizational separation
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
       <Navbar />
@@ -811,7 +587,7 @@ function CategoryProjects() {
           </div>
         </div>
 
-        {/* Projects Layout */}
+        {/* Projects Layout with Organizational Separation */}
         <div className="max-w-7xl mx-auto">
           {filteredProjects.length === 0 ? (
             <div className="text-center py-24">
@@ -831,29 +607,109 @@ function CategoryProjects() {
                 </button>
               )}
             </div>
-          ) : viewMode === 'grid' ? (
-            /* Grid Layout */
-            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredProjects.map((project, index) => (
-                <ProjectCard 
-                  key={project.id} 
-                  project={project} 
-                  index={index} 
-                  isSports={project.is_sport === 1}
-                />
-              ))}
-            </div>
           ) : (
-            /* List Layout */
-            <div className="space-y-4">
-              {filteredProjects.map((project, index) => (
-                <ProjectListItem 
-                  key={project.id} 
-                  project={project} 
-                  index={index} 
-                  isSports={project.is_sport === 1}
-                />
-              ))}
+            <div className="space-y-12">
+              {/* REGULAR SOCIAL MEDIA PROJECTS SECTION */}
+              {hasRegularProjects && (
+                <motion.section
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="space-y-6"
+                >
+                  {/* Section Header */}
+                  <div className="text-center mb-8">
+                    <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 bg-cyan-500/10 backdrop-blur-lg border border-cyan-400/30">
+                      <Zap className="w-6 h-6 text-cyan-400" />
+                      <span className="text-cyan-400 font-medium text-sm uppercase tracking-wider">
+                        Social Media Designs
+                      </span>
+                    </div>
+                    <h2 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                      REGULAR SOCIAL MEDIA PROJECTS
+                    </h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto">
+                      Creative social media designs for various industries and brands
+                    </p>
+                  </div>
+
+                  {/* Projects Display */}
+                  {viewMode === 'grid' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {filteredRegularProjects.map((project, index) => (
+                        <ProjectCard 
+                          key={project.id} 
+                          project={project} 
+                          index={index} 
+                          isSports={false}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {filteredRegularProjects.map((project, index) => (
+                        <ProjectListItem 
+                          key={project.id} 
+                          project={project} 
+                          index={index} 
+                          isSports={false}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </motion.section>
+              )}
+
+              {/* SPORTS DESIGN PROJECTS SECTION */}
+              {hasSportsProjects && (
+                <motion.section
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="space-y-6"
+                >
+                  {/* Section Header */}
+                  <div className="text-center mb-8">
+                    <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 bg-orange-500/10 backdrop-blur-lg border border-orange-400/30">
+                      <Trophy className="w-6 h-6 text-orange-400" />
+                      <span className="text-orange-400 font-medium text-sm uppercase tracking-wider">
+                        Sports Brand Designs
+                      </span>
+                    </div>
+                    <h2 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                      SPORTS DESIGN PROJECTS
+                    </h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto">
+                      Championship-level social media designs for sports teams and athletic brands
+                    </p>
+                  </div>
+
+                  {/* Projects Display */}
+                  {viewMode === 'grid' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {filteredSportsProjects.map((project, index) => (
+                        <ProjectCard 
+                          key={project.id} 
+                          project={project} 
+                          index={index} 
+                          isSports={true}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {filteredSportsProjects.map((project, index) => (
+                        <ProjectListItem 
+                          key={project.id} 
+                          project={project} 
+                          index={index} 
+                          isSports={true}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </motion.section>
+              )}
             </div>
           )}
         </div>
