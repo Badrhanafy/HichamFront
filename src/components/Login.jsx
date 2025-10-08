@@ -34,7 +34,7 @@ const Login = () => {
 
                 // Redirect or show success message
                 console.log('Login successful:', response.data.data);
-                window.location.href = '/Admin'; // Adjust redirect as needed
+                window.location.href = '/MoulchiPannel'; // Adjust redirect as needed
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed. Please try again.');

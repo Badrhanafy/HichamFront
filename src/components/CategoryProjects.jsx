@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import logo from "../assets/images/logo.png"
 import { 
   Search, 
   Filter, 
@@ -15,10 +16,13 @@ import {
   Grid3X3,
   List,
   Trophy,
-  Target
+  Target,
+  Pin,
+  PinOff
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import DarkVeil from './DarkVeil';
 
 function CategoryProjects() {
   const category = useParams();
@@ -35,9 +39,12 @@ function CategoryProjects() {
   // Check if current category is logo
   const isLogoCategory = category.category?.toLowerCase() === 'logo';
 
-  // Separate projects into regular and sports
-  const regularProjects = projects.filter(project => project.is_sport != 1);
-  const sportsProjects = projects.filter(project => project.is_sport == 1);
+  // Separate projects into pinned, regular, and sports
+  const pinnedProjects = projects.filter(project => project.is_pinned);
+  const regularProjects = projects.filter(project => project.is_sport != 1 && !project.is_pinned);
+  const sportsProjects = projects.filter(project => project.is_sport == 1 && !project.is_pinned);
+  
+  const hasPinnedProjects = pinnedProjects.length > 0;
   const hasSportsProjects = sportsProjects.length > 0;
   const hasRegularProjects = regularProjects.length > 0;
 
@@ -56,8 +63,13 @@ function CategoryProjects() {
       );
     }
 
-    // Apply sorting
+    // Apply sorting (pinned projects always come first)
     filtered.sort((a, b) => {
+      // Pinned projects always come first
+      if (a.is_pinned && !b.is_pinned) return -1;
+      if (!a.is_pinned && b.is_pinned) return 1;
+      
+      // Then apply the selected sort
       switch (sortBy) {
         case 'newest':
           return new Date(b.created_at) - new Date(a.created_at);
@@ -73,9 +85,10 @@ function CategoryProjects() {
     setFilteredProjects(filtered);
   }, [searchTerm, projects, sortBy]);
 
-  // Filter regular and sports projects separately for display
-  const filteredRegularProjects = filteredProjects.filter(project => project.is_sport != 1);
-  const filteredSportsProjects = filteredProjects.filter(project => project.is_sport == 1);
+  // Filter pinned, regular and sports projects separately for display
+  const filteredPinnedProjects = filteredProjects.filter(project => project.is_pinned);
+  const filteredRegularProjects = filteredProjects.filter(project => project.is_sport != 1 && !project.is_pinned);
+  const filteredSportsProjects = filteredProjects.filter(project => project.is_sport == 1 && !project.is_pinned);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -84,10 +97,12 @@ function CategoryProjects() {
         const response = await axios.get(`${API_URL}/api/projects/category/${category.category}`);
         const projectsData = response.data.data;
         
-        // Sort by newest first by default
-        const sortedProjects = projectsData.sort((a, b) => 
-          new Date(b.created_at) - new Date(a.created_at)
-        );
+        // Sort with pinned projects first, then by newest
+        const sortedProjects = projectsData.sort((a, b) => {
+          if (a.is_pinned && !b.is_pinned) return -1;
+          if (!a.is_pinned && b.is_pinned) return 1;
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
         
         setProjects(sortedProjects);
         setFilteredProjects(sortedProjects);
@@ -149,9 +164,10 @@ function CategoryProjects() {
   };
 
   // Project Card Component
-  const ProjectCard = ({ project, index, isSports = false }) => {
+  const ProjectCard = ({ project, index, isSports = false, isPinned = false }) => {
     const projectTechnologies = getTechnologies(project);
     const categoryColor = getCategoryColor(project.category);
+    const [loaded, setLoaded] = useState(false);
     
     return (
       <motion.div
@@ -159,49 +175,84 @@ function CategoryProjects() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
         className={`group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden h-full flex flex-col ${
-          isSports 
-            ? 'border-orange-400/30 hover:border-orange-400/50' 
-            : 'border-white/10 hover:border-cyan-400/30'
+          isPinned
+            ? "border-yellow-400/50 hover:border-yellow-400/80 shadow-lg shadow-yellow-500/20"
+            : isSports
+            ? "border-orange-400/30 hover:border-orange-400/50"
+            : "border-white/10 hover:border-cyan-400/30"
         }`}
       >
-    
-      
+        {/* Pinned Badge */}
+        {isPinned && (
+          <div className="absolute top-2 right-2 z-20">
+            <div className="bg-yellow-500 text-black px-2 py-1 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+              <Pin className="w-3 h-3" />
+              PINNED
+            </div>
+          </div>
+        )}
 
         {/* Background Glow Effect */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${
-          isSports ? 'from-orange-500 to-red-500' : categoryColor
-        } opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
-        
-        {/* Project Image Container - Direct Link */}
-        <Link 
+        <div
+          className={`absolute inset-0 bg-gradient-to-br ${
+            isPinned 
+              ? "from-yellow-500 to-orange-500" 
+              : isSports 
+              ? "from-orange-500 to-red-500" 
+              : categoryColor
+          } opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
+        />
+
+        {/* Project Image Container */}
+        <Link
           to={`/projects/project/${project.id}`}
           className="relative overflow-hidden bg-gray-800 block flex-1"
-          style={{ 
-            width: '100%', 
-            height: '400px',
-            aspectRatio: '1080/1440'
+          style={{
+            width: "100%",
+            height: "400px",
+            aspectRatio: "1080/1440",
           }}
         >
+          {/* Placeholder (cover) while image loading */}
+          {!loaded && (
+            <div className="absolute inset-0 bg-gray-700 animate-pulse flex items-center justify-center text-gray-400 text-sm">
+              <img src={logo} alt="" />
+            </div>
+          )}
+
+          {/* Actual image */}
           <img
             src={project.image_url}
             alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            loading="lazy"
+            onLoad={() => setLoaded(true)}
             onError={(e) => {
-              e.target.src = `https://via.placeholder.com/1080x1440/0f172a/1e293b?text=${encodeURIComponent(project.title)}`;
+              e.target.src = `https://via.placeholder.com/1080x1440/0f172a/1e293b?text=${encodeURIComponent(
+                project.title
+              )}`;
             }}
+            className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
+              loaded ? "opacity-100" : "opacity-0"
+            }`}
           />
         </Link>
 
         {/* Hover Border Effect */}
-        <div className={`absolute inset-0 border-2 border-transparent group-hover:border-${
-          isSports ? 'orange-400/20' : 'cyan-400/20'
-        } transition-all duration-500 pointer-events-none`} />
+        <div
+          className={`absolute inset-0 border-2 transition-all duration-500 pointer-events-none ${
+            isPinned
+              ? 'border-yellow-400/30 group-hover:border-yellow-400/60'
+              : isSports
+              ? 'border-orange-400/20 group-hover:border-orange-400/40'
+              : 'border-transparent group-hover:border-cyan-400/20'
+          }`}
+        />
       </motion.div>
     );
   };
 
   // Project List Item Component
-  const ProjectListItem = ({ project, index, isSports = false }) => {
+  const ProjectListItem = ({ project, index, isSports = false, isPinned = false }) => {
     const projectTechnologies = getTechnologies(project);
     const categoryColor = getCategoryColor(project.category);
     
@@ -212,7 +263,9 @@ function CategoryProjects() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
         className={`group bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden ${
-          isSports 
+          isPinned
+            ? 'border-yellow-400/50 hover:border-yellow-400/80 shadow-lg shadow-yellow-500/20'
+            : isSports 
             ? 'border-orange-400/30 hover:border-orange-400/50' 
             : 'border-white/10 hover:border-cyan-400/30'
         }`}
@@ -241,9 +294,13 @@ function CategoryProjects() {
             {/* Category Badge */}
             <div className="absolute top-4 left-4">
               <span className={`px-3 py-1 bg-gradient-to-r ${
-                isSports ? 'from-orange-500 to-red-500' : categoryColor
+                isPinned 
+                  ? 'from-yellow-500 to-orange-500' 
+                  : isSports 
+                  ? 'from-orange-500 to-red-500' 
+                  : categoryColor
               } text-white text-xs font-bold uppercase tracking-wider`}>
-                {isSports ? 'SPORTS' : project.category}
+                {isPinned ? 'PINNED' : isSports ? 'SPORTS' : project.category}
               </span>
             </div>
 
@@ -284,6 +341,12 @@ function CategoryProjects() {
                     <Code className="w-4 h-4" />
                     {projectTechnologies.length} technologies
                   </div>
+                  {isPinned && (
+                    <div className="flex items-center gap-1 text-yellow-400">
+                      <Pin className="w-4 h-4" />
+                      PINNED
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -315,7 +378,9 @@ function CategoryProjects() {
                 <Link
                   to={`/projects/project/${project.id}`}
                   className={`px-6 py-3 text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-105 flex items-center gap-2 group/btn ${
-                    isSports
+                    isPinned
+                      ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600'
+                      : isSports
                       ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
                       : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600'
                   }`}
@@ -331,19 +396,29 @@ function CategoryProjects() {
     );
   };
 
+  // Loading animation component
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative">
-            {/* Animated Spinner */}
-            <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            {/* Pulsing Glow Effect */}
-            <div className="absolute inset-0 w-16 h-16 bg-cyan-500 rounded-full animate-ping opacity-20 mx-auto"></div>
-          </div>
-          <h3 className="text-xl font-bold text-white mt-6">LOADING PROJECTS</h3>
-          <p className="text-gray-400 mt-2">Preparing amazing content for you</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-blue-900">
+        <div className="absolute inset-0 z-0">
+          <DarkVeil />
         </div>
+        <motion.div
+          className='w-24 h-24'
+          animate={{
+            rotateY: 360,
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            transformStyle: "preserve-3d",
+          }}
+        >
+          <img src={logo} alt="Loading..." className="w-full h-full" />
+        </motion.div>
       </div>
     );
   }
@@ -358,7 +433,6 @@ function CategoryProjects() {
           {/* Header */}
           <div className="max-w-7xl mx-auto mb-8">
             <div className="text-center mb-8">
-            
               <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent uppercase">
                 Logo Designs
               </h1>
@@ -387,6 +461,7 @@ function CategoryProjects() {
                 {/* Results Count */}
                 <div className="text-cyan-400 font-medium">
                   {filteredProjects.length} LOGOS DISPLAYED
+                  {hasPinnedProjects && ` • ${filteredPinnedProjects.length} PINNED`}
                 </div>
               </div>
             </div>
@@ -413,59 +488,138 @@ function CategoryProjects() {
                 )}
               </div>
             ) : (
-              /* Logo Grid - Images only with real dimensions */
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-8">
-                {filteredProjects.map((logo, index) => (
-                  <motion.div
-                    key={logo.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ 
-                      duration: 0.6, 
-                      delay: index * 0.1,
-                      type: "spring",
-                      stiffness: 100
-                    }}
-                    whileHover={{ 
-                      scale: 1.05,
-                      transition: { duration: 0.2 }
-                    }}
-                    className="group relative"
+              <div className="space-y-8">
+                {/* PINNED LOGOS SECTION */}
+                {hasPinnedProjects && (
+                  <motion.section
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="space-y-6"
                   >
-                    {/* Logo Container */}
-                    <Link 
-                      to={`/projects/project/${logo.id}`}
-                      className="block bg-white/5 backdrop-blur-lg border border-white/10 hover:border-cyan-400/30 transition-all duration-500 overflow-hidden rounded-lg p-6 hover:bg-white/10"
-                    >
-                      {/* Logo Image - Maintains original dimensions */}
-                      <div className="relative flex items-center justify-center min-h-[120px]">
-                        <img
-                          src={logo.image_url}
-                          alt={logo.title}
-                          className="max-w-full max-h-32 object-contain transition-all duration-500 group-hover:scale-110"
-                          style={{
-                            width: 'auto',
-                            height: 'auto'
-                          }}
-                          onError={(e) => {
-                            e.target.src = `https://via.placeholder.com/200x100/0f172a/1e293b?text=${encodeURIComponent(logo.title || 'Logo')}`;
-                          }}
-                        />
-                        
-                        {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-cyan-400/0 group-hover:bg-cyan-400/5 transition-all duration-300 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
-                        </div>
-                      </div>
-                    </Link>
+                  
 
-                    {/* Logo Title - Minimal */}
-                    <div className="mt-3 text-center">
-                      <h3 className="text-sm font-medium text-white truncate">
-                        {logo.title}
-                      </h3>
+                    {/* Pinned Logos Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-8">
+                      {filteredPinnedProjects.map((logo, index) => (
+                        <motion.div
+                          key={logo.id}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ 
+                            duration: 0.6, 
+                            delay: index * 0.1,
+                            type: "spring",
+                            stiffness: 100
+                          }}
+                          whileHover={{ 
+                            scale: 1.05,
+                            transition: { duration: 0.2 }
+                          }}
+                          className="group relative"
+                        >
+                          {/* Logo Container */}
+                          <Link 
+                            to={`/projects/project/${logo.id}`}
+                            className="block bg-white/5 backdrop-blur-lg border border-yellow-400/30 hover:border-yellow-400/50 transition-all duration-500 overflow-hidden rounded-lg p-6 hover:bg-white/10 shadow-lg shadow-yellow-500/20"
+                          >
+                            {/* Logo Image - Maintains original dimensions */}
+                            <div className="relative flex items-center justify-center min-h-[120px]">
+                              <img
+                                src={logo.image_url}
+                                alt={logo.title}
+                                className="max-w-full max-h-32 object-contain transition-all duration-500 group-hover:scale-110"
+                                style={{
+                                  width: 'auto',
+                                  height: 'auto'
+                                }}
+                                onError={(e) => {
+                                  e.target.src = `https://via.placeholder.com/200x100/0f172a/1e293b?text=${encodeURIComponent(logo.title || 'Logo')}`;
+                                }}
+                              />
+                              
+                              {/* Hover Overlay */}
+                              <div className="absolute inset-0 bg-yellow-400/0 group-hover:bg-yellow-400/5 transition-all duration-300 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
+                              </div>
+                            </div>
+                          </Link>
+
+                          {/* Logo Title - Minimal */}
+                          <div className="mt-3 text-center">
+                            <h3 className="text-sm font-medium text-white truncate">
+                              {logo.title}
+                            </h3>
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
-                  </motion.div>
-                ))}
+                  </motion.section>
+                )}
+
+                {/* ALL LOGOS SECTION */}
+                <motion.section
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="space-y-6"
+                >
+                
+
+                  {/* All Logos Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-8">
+                    {filteredRegularProjects.map((logo, index) => (
+                      <motion.div
+                        key={logo.id}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ 
+                          duration: 0.6, 
+                          delay: index * 0.1,
+                          type: "spring",
+                          stiffness: 100
+                        }}
+                        whileHover={{ 
+                          scale: 1.05,
+                          transition: { duration: 0.2 }
+                        }}
+                        className="group relative"
+                      >
+                        {/* Logo Container */}
+                        <Link 
+                          to={`/projects/project/${logo.id}`}
+                          className="block bg-white/5 backdrop-blur-lg border border-white/10 hover:border-cyan-400/30 transition-all duration-500 overflow-hidden rounded-lg p-6 hover:bg-white/10"
+                        >
+                          {/* Logo Image - Maintains original dimensions */}
+                          <div className="relative flex items-center justify-center min-h-[120px]">
+                            <img
+                              src={logo.image_url}
+                              alt={logo.title}
+                              className="max-w-full max-h-32 object-contain transition-all duration-500 group-hover:scale-110"
+                              style={{
+                                width: 'auto',
+                                height: 'auto'
+                              }}
+                              onError={(e) => {
+                                e.target.src = `https://via.placeholder.com/200x100/0f172a/1e293b?text=${encodeURIComponent(logo.title || 'Logo')}`;
+                              }}
+                            />
+                            
+                            {/* Hover Overlay */}
+                            <div className="absolute inset-0 bg-cyan-400/0 group-hover:bg-cyan-400/5 transition-all duration-300 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            </div>
+                          </div>
+                        </Link>
+
+                        {/* Logo Title - Minimal */}
+                        <div className="mt-3 text-center">
+                          <h3 className="text-sm font-medium text-white truncate">
+                            {logo.title}
+                          </h3>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.section>
               </div>
             )}
           </div>
@@ -483,7 +637,6 @@ function CategoryProjects() {
         {/* Header */}
         <div className="max-w-7xl mx-auto mb-8">
           <div className="text-center mb-8">
-           
             <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent uppercase">
               {category.category} Projects
             </h1>
@@ -556,6 +709,7 @@ function CategoryProjects() {
                   sortBy === 'oldest' ? 'Oldest First' : 
                   'Title'
                 }
+                {hasPinnedProjects && ` • ${filteredPinnedProjects.length} PINNED`}
               </span>
               {(searchTerm) && (
                 <button
@@ -592,19 +746,52 @@ function CategoryProjects() {
             </div>
           ) : (
             <div className="space-y-12">
-              {/* REGULAR SOCIAL MEDIA PROJECTS SECTION */}
-              {hasRegularProjects && (
+              {/* PINNED PROJECTS SECTION */}
+              {hasPinnedProjects && (
                 <motion.section
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
                   className="space-y-6"
                 >
-                  {/* Section Header */}
-                  <div className="text-center mb-8">
                  
-                    
-                  </div>
+
+                  {/* Projects Display */}
+                  {viewMode === 'grid' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {filteredPinnedProjects.map((project, index) => (
+                        <ProjectCard 
+                          key={project.id} 
+                          project={project} 
+                          index={index} 
+                          isPinned={true}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {filteredPinnedProjects.map((project, index) => (
+                        <ProjectListItem 
+                          key={project.id} 
+                          project={project} 
+                          index={index} 
+                          isPinned={true}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </motion.section>
+              )}
+
+              {/* REGULAR SOCIAL MEDIA PROJECTS SECTION */}
+              {hasRegularProjects && (
+                <motion.section
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="space-y-6"
+                >
+                
 
                   {/* Projects Display */}
                   {viewMode === 'grid' ? (
@@ -638,12 +825,11 @@ function CategoryProjects() {
                 <motion.section
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
                   className="space-y-6"
                 >
                   {/* Section Header */}
                   <div className="text-center mb-8">
-                    
                     <h2 className="text-4xl font-black mt-24 text-white mb-4 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
                       SPORTS DESIGN PROJECTS
                     </h2>

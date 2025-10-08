@@ -14,6 +14,7 @@ import animationData from '../assets/Loading.json'
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import logo  from "../assets/images/logo.png"
+import bhance  from '../assets/images/BEHANCE.png'
 const Hero = () => {
   const [scrollDirection, setScrollDirection] = useState('down');
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -141,7 +142,7 @@ if (isLoading) {
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.8, delay: 0.6 }}
-    className="mt-6 text-lg md:text-xl text-white max-w-3xl mx-auto md:mx-0"
+    className="mt-6 text-lg texts md:text-xl text-white max-w-3xl mx-auto md:mx-0"
   >
     I create visually stunning designs that tell your brand's story and captivate your audience.
   </motion.p>
@@ -172,15 +173,17 @@ if (isLoading) {
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.8, delay: 1.0 }}
-    className="mt-12 md:mt-16 flex justify-center md:justify-start space-x-6"
+    className="mt-12 md:mt-10 flex justify-center md:justify-start space-x-6"
   >
     
-    <a href="#" className="text-white hover:text-yellow-400 transition-colors duration-300">
-      <Linkedin className="h-6 w-6" />
+    <div className="flex gap-2">
+         <a href="https://www.behance.net/hichamyt1"  className="text-white relative  bottom-3">
+      <img src={bhance} alt="" className='w-12 h-12' srcset="" />
     </a>
-    <a href="#" className="text-white hover:text-yellow-400 transition-colors duration-300">
+    <a href="https://www.instagram.com/elhachimibayi?igsh=anIxaGsxdDBhYWg2" className="text-white ">
       <Instagram className="h-6 w-6" />
     </a>
+    </div>
   </motion.div>
 </motion.div>
 

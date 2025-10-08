@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
+import logo from "../assets/images/logo.png"
 import { 
   ArrowLeft, 
   Share2, 
@@ -21,6 +22,7 @@ import {
   Cpu
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import DarkVeil from './DarkVeil';
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -147,20 +149,32 @@ const ProjectDetails = () => {
     return hasField(field) ? project[field] : defaultValue;
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-200 via-black to-purple-900/30 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative">
-            <div className="w-20 h-20 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <div className="absolute inset-0 w-20 h-20 bg-cyan-500 rounded-full animate-ping opacity-20 mx-auto"></div>
-          </div>
-          <h3 className="text-xl font-bold text-white mt-6">LOADING PROJECT</h3>
-          <p className="text-gray-400 mt-2">Unleashing creativity...</p>
-        </div>
+  // Loading animation component
+if (loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-blue-900">
+      <div className="absolute inset-0 z-0">
+        <DarkVeil />
       </div>
-    );
-  }
+      <motion.div
+        className='w-32 h-32'
+        animate={{
+          rotateY: 360,
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <img src={logo} alt="Loading..." className="w-full h-full" />
+      </motion.div>
+    </div>
+  );
+}
 
   if (error || !project) {
     return (

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Palette, Heart, ArrowUp } from 'lucide-react';
 import DarkVeil from './DarkVeil';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -11,7 +12,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-black  text-white py-12 relative  overflow-hidden">
+    <footer className="bg-black  texts text-white py-12 relative  overflow-hidden">
       {/* DarkVeil background */}
       <div className="absolute inset-0 z-0">
         <DarkVeil />
@@ -24,9 +25,9 @@ const Footer = () => {
           <div className="md:col-span-2">
             <div className="flex items-center mb-4">
               <Palette className="h-8 w-8 text-purple-400" />
-              <span className="ml-2 text-xl font-bold">DesignStudio</span>
+              <span className="ml-2 text-xl font-bold heads">DesignStudio</span>
             </div>
-            <p className="text-gray-400 mb-6 max-w-md">
+            <p className="text-white/70 mb-6 max-w-md">
               Creating beautiful, functional designs that tell your brand's story and captivate your audience.
             </p>
             <div className="flex space-x-4">
@@ -36,21 +37,20 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4 heads">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="#home" className="text-gray-400 hover:text-white">Home</a></li>
-              <li><a href="#about" className="text-gray-400 hover:text-white">About</a></li>
-              <li><a href="#portfolio" className="text-gray-400 hover:text-white">Portfolio</a></li>
-              <li><a href="#skills" className="text-gray-400 hover:text-white">Skills</a></li>
-              <li><a href="#contact" className="text-gray-400 hover:text-white">Contact</a></li>
+              <li><Link to={"/"} className="text-white/70 hover:text-white">Home</Link></li>
+              <li><Link to={"/About"} className="text-white/70 hover:text-white">About</Link></li>
+              <li><Link to={"projects"} className="text-white/70 hover:text-white">Portfolio</Link></li>
+              <li><Link to={"/Skills"} className="text-white/70 hover:text-white">Skills</Link></li>
+              <li><Link to={"/contact"} className="text-white/70 hover:text-white">Contact</Link></li>
             </ul>
           </div>
 
           {/* Services */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Services</h3>
+            <h3 className="text-lg font-semibold heads mb-4">Services</h3>
             <ul className="space-y-2 text-gray-400">
-              <li>UI/UX Design</li>
               <li>Brand Identity</li>
               <li>Web Design</li>
               <li>Graphic Design</li>

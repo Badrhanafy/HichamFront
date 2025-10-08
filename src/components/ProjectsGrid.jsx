@@ -16,7 +16,9 @@ import {
   Layers,
   ArrowRight,
   Edit3,
-  Trash2
+  Trash2,
+  Pin,
+  PinOff
 } from 'lucide-react';
 import { gsap } from 'gsap';
 import UpdateProject from './UpdateProject';
@@ -29,7 +31,8 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
   const [sortBy, setSortBy] = useState('newest');
   const [expandedDescriptions, setExpandedDescriptions] = useState({});
   const [viewMode, setViewMode] = useState('grid');
-const API_URL = import.meta.env.VITE_BACKEND_URL;
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
+
   // Refs for animation
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
@@ -60,6 +63,61 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
     return [];
   };
 
+  // Handle pin/unpin project
+  const handlePinProject = async (projectId, pinStatus) => {
+    try {
+      const token = localStorage.getItem('token');
+      const endpoint = pinStatus ? 'pin' : 'unpin';
+      
+      const response = await fetch(`${API_URL}/api/projects/${projectId}/${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        // Update the project in the parent component
+        onProjectUpdate(result.data);
+        // Show success message
+        alert(`Project ${pinStatus ? 'pinned' : 'unpinned'} successfully!`);
+      } else {
+        throw new Error('Failed to update pin status');
+      }
+    } catch (error) {
+      console.error('Error updating pin status:', error);
+      alert('Failed to update pin status');
+    }
+  };
+
+  // Toggle pin status
+  const handleTogglePin = async (projectId, currentPinStatus) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${API_URL}/api/projects/${projectId}/toggle-pin`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        onProjectUpdate(result.data);
+        alert(`Project ${result.data.is_pinned ? 'pinned' : 'unpinned'} successfully!`);
+      } else {
+        throw new Error('Failed to toggle pin status');
+      }
+    } catch (error) {
+      console.error('Error toggling pin status:', error);
+      alert('Failed to toggle pin status');
+    }
+  };
+
   // Extract unique categories
   const categories = ['all', ...new Set(projects.map(project => project.category))];
 
@@ -83,6 +141,11 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
           return new Date(a.created_at) - new Date(b.created_at);
         case 'title':
           return a.title.localeCompare(b.title);
+        case 'pinned':
+          // Show pinned projects first
+          if (a.is_pinned && !b.is_pinned) return -1;
+          if (!a.is_pinned && b.is_pinned) return 1;
+          return new Date(b.created_at) - new Date(a.created_at);
         default:
           return 0;
       }
@@ -133,7 +196,6 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
       if (response.ok) {
         onProjectDelete(projectId);
-        // Show success message
         alert('Project deleted successfully!');
       } else {
         throw new Error('Failed to delete project');
@@ -258,7 +320,6 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="text-center mb-8">
-          
           <h1 className="text-6xl heads font-black text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
             DIGITAL CREATIONS
           </h1>
@@ -307,6 +368,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
               <option className='bg-slate-800' value="newest">Newest First</option>
               <option className='bg-slate-800' value="oldest">Oldest First</option>
               <option className='bg-slate-800' value="title">Sort by Title</option>
+              <option className='bg-slate-800' value="pinned">Pinned First</option>
             </select>
           </div>
 
@@ -353,12 +415,26 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
               return (
                 <div
                   key={project.id}
-                  className="group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border border-white/10 hover:border-cyan-400/30 transition-all duration-500 overflow-hidden"
+                  className={`group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden ${
+                    project.is_pinned 
+                      ? 'border-yellow-400/50 hover:border-yellow-400/80' 
+                      : 'border-white/10 hover:border-cyan-400/30'
+                  }`}
                   style={{
                     animationDelay: `${index * 100}ms`,
                     animation: 'fadeInUp 0.6s ease-out forwards'
                   }}
                 >
+                  {/* Pinned Badge */}
+                  {project.is_pinned && (
+                    <div className="absolute top-2 right-2 z-20">
+                      <div className="bg-yellow-500 text-black px-2 py-1 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+                        <Pin className="w-3 h-3" />
+                        PINNED
+                      </div>
+                    </div>
+                  )}
+
                   {/* Background Glow Effect */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${categoryColor} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
                   
@@ -368,7 +444,6 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
                       src={project.image_url}
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                     
                     />
                     
                     {/* Image Overlay */}
@@ -391,6 +466,17 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
                       </button>
                       {isAdmin && (
                         <>
+                          <button
+                            onClick={() => handleTogglePin(project.id, project.is_pinned)}
+                            className={`p-2 bg-black/50 backdrop-blur-sm transition-colors duration-200 ${
+                              project.is_pinned 
+                                ? 'text-yellow-400 hover:bg-yellow-500 hover:text-white' 
+                                : 'text-gray-400 hover:bg-yellow-500 hover:text-white'
+                            }`}
+                            title={project.is_pinned ? 'Unpin Project' : 'Pin Project'}
+                          >
+                            {project.is_pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+                          </button>
                           <button
                             onClick={() => setUpdateProject(project)}
                             className="p-2 bg-black/50 backdrop-blur-sm text-white hover:bg-blue-500 transition-colors duration-200"
@@ -486,17 +572,26 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
                       </button>
                       {isAdmin && (
                         <button
-                          onClick={() => setUpdateProject(project)}
-                          className="px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold text-sm uppercase tracking-wider hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 transform hover:scale-[1.02]"
+                          onClick={() => handleTogglePin(project.id, project.is_pinned)}
+                          className={`px-4 py-3 font-bold text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center ${
+                            project.is_pinned
+                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-black hover:from-yellow-600 hover:to-orange-600'
+                              : 'bg-gradient-to-r from-gray-500 to-slate-500 text-white hover:from-gray-600 hover:to-slate-600'
+                          }`}
+                          title={project.is_pinned ? 'Unpin Project' : 'Pin Project'}
                         >
-                          <Edit3 className="w-4 h-4" />
+                          {project.is_pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
                         </button>
                       )}
                     </div>
                   </div>
 
                   {/* Hover Border Effect */}
-                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-cyan-400/20 transition-all duration-500 pointer-events-none" />
+                  <div className={`absolute inset-0 border-2 transition-all duration-500 pointer-events-none ${
+                    project.is_pinned
+                      ? 'border-yellow-400/20 group-hover:border-yellow-400/40'
+                      : 'border-transparent group-hover:border-cyan-400/20'
+                  }`} />
                 </div>
               );
             })}
@@ -528,6 +623,21 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
               <X className="w-6 h-6" />
             </button>
 
+            {/* Pin Button in Modal */}
+            {isAdmin && (
+              <button
+                onClick={() => handleTogglePin(selectedProject.id, selectedProject.is_pinned)}
+                className={`absolute top-4 right-16 z-10 p-3 backdrop-blur-lg transition-colors duration-200 border hover:scale-110 transform transition-transform duration-200 ${
+                  selectedProject.is_pinned
+                    ? 'bg-yellow-500 text-black border-yellow-400 hover:bg-yellow-600'
+                    : 'bg-black/50 text-gray-400 border-cyan-400/20 hover:bg-yellow-500 hover:text-white'
+                }`}
+                title={selectedProject.is_pinned ? 'Unpin Project' : 'Pin Project'}
+              >
+                {selectedProject.is_pinned ? <PinOff className="w-6 h-6" /> : <Pin className="w-6 h-6" />}
+              </button>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
               {/* Image Section */}
               <div className="relative h-80 lg:h-full">
@@ -551,17 +661,27 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
                   
                   {/* Project Info Overlay */}
                   <div className="absolute bottom-6 left-6 right-6">
-                    <h2 className="text-4xl font-black text-white mb-3">
-                      {selectedProject.title}
-                    </h2>
-                    <div className="flex items-center gap-4">
-                      <span className={`px-4 py-2 bg-gradient-to-r ${getCategoryColor(selectedProject.category)} text-white font-bold text-sm uppercase tracking-wider`}>
-                        {selectedProject.category}
-                      </span>
-                      <span className="text-cyan-400 flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        {new Date(selectedProject.created_at).toLocaleDateString()}
-                      </span>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h2 className="text-4xl font-black text-white mb-3">
+                          {selectedProject.title}
+                        </h2>
+                        <div className="flex items-center gap-4">
+                          <span className={`px-4 py-2 bg-gradient-to-r ${getCategoryColor(selectedProject.category)} text-white font-bold text-sm uppercase tracking-wider`}>
+                            {selectedProject.category}
+                          </span>
+                          <span className="text-cyan-400 flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            {new Date(selectedProject.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      {selectedProject.is_pinned && (
+                        <div className="bg-yellow-500 text-black px-3 py-2 text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+                          <Pin className="w-4 h-4" />
+                          PINNED
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -605,18 +725,28 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
                   {/* Action Buttons */}
                   <div className="flex gap-4 pt-6">
-                    
-                    
                     {isAdmin && (
-                      <button 
-                        onClick={() => {
-                          setUpdateProject(selectedProject);
-                          closeModal();
-                        }}
-                        className="px-6 py-4 border border-blue-400 text-blue-400 font-bold uppercase tracking-wider hover:bg-blue-400 hover:text-black transition-all duration-300 transform hover:scale-105"
-                      >
-                        EDIT PROJECT
-                      </button>
+                      <>
+                        <button 
+                          onClick={() => handleTogglePin(selectedProject.id, selectedProject.is_pinned)}
+                          className={`px-6 py-4 border font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105 ${
+                            selectedProject.is_pinned
+                              ? 'border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black'
+                              : 'border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black'
+                          }`}
+                        >
+                          {selectedProject.is_pinned ? 'UNPIN PROJECT' : 'PIN PROJECT'}
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setUpdateProject(selectedProject);
+                            closeModal();
+                          }}
+                          className="px-6 py-4 border border-blue-400 text-blue-400 font-bold uppercase tracking-wider hover:bg-blue-400 hover:text-black transition-all duration-300 transform hover:scale-105"
+                        >
+                          EDIT PROJECT
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>

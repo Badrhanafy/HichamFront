@@ -37,7 +37,7 @@ const Register = () => {
         
         // Redirect or show success message
         console.log('Registration successful:', response.data.data);
-        window.location.href = '/Admin';
+        window.location.href = '/MoulchiPannel';
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');

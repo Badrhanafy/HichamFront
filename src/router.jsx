@@ -26,7 +26,7 @@ const router = createBrowserRouter([
     ],
   },
   { path:"/addProject", element:<ProjectsPage /> },
-  { path:"/admin", element:<Admin /> },
+  { path:"/MoulchiPannel", element:<Admin /> },
    {
         path: 'projects',
         children: [

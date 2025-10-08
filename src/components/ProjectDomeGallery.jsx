@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import DomeGallery from './DomeGallery'; // Your existing DomeGallery component
-
+import DarkVeil from './DarkVeil';
+import {motion} from "framer-motion"
+import logo from "../assets/images/logo.png"
 const ProjectDomeGallery = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,13 +37,32 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
     }));
   }, [projects]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+  // Loading animation component
+if (loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-blue-900">
+      <div className="absolute inset-0 z-0">
+        <DarkVeil />
       </div>
-    );
-  }
+      <motion.div
+        className='w-24 h-24'
+        animate={{
+          rotateY: 360,
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <img src={logo} alt="Loading..." className="w-full h-full" />
+      </motion.div>
+    </div>
+  );
+}
 
   if (error) {
     return (
@@ -70,37 +91,12 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
       />
       
       {/* Optional: Add a small info panel */}
-      <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-3 rounded-lg">
+      <div className="absolute  left-4 bg-black bg-opacity-50 text-white p-3 rounded-lg">
         <p className="text-sm">
           {projects.length} project{projects.length !== 1 ? 's' : ''} loaded
         </p>
       </div>
     </div>
-  );
-};
-
-// Alternative simplified version if you want a basic gallery:
-const SimpleProjectGallery = () => {
-  const [projects, setProjects] = useState([]);
-
-  useEffect(() => {
-    axios.get(`${API_URL}/api/projects`)
-      .then(response => setProjects(response.data.data))
-      .catch(console.error);
-  }, []);
-
-  const galleryImages = projects.map(project => ({
-    src: project.image_url,
-    alt: project.title,
-  }));
-
-  return (
-    <DomeGallery 
-      images={galleryImages}
-      // Customize based on your needs
-      segments={30}
-      fit={0.7}
-    />
   );
 };
 
