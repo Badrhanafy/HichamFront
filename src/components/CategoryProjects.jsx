@@ -219,29 +219,6 @@ function CategoryProjects() {
             }`}
           />
 
-          {/* Image Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-          
-        
-
-        
-
-          {/* Project Title Overlay */}
-          <div className="absolute bottom-4 left-4 right-4">
-            <h3 className="text-xl font-black text-white mb-2 line-clamp-2">
-              {project.title}
-            </h3>
-            <div className="flex items-center gap-3 text-xs text-gray-300">
-              <div className="flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                {formatDate(project.created_at)}
-              </div>
-              <div className="flex items-center gap-1">
-                <Code className="w-3 h-3" />
-                {projectTechnologies?.length} tech
-              </div>
-            </div>
-          </div>
         </Link>
 
       
@@ -264,9 +241,9 @@ function CategoryProjects() {
         transition={{ duration: 0.6, delay: index * 0.1 }}
         className={`group bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden `}
         style={{
-          borderWidth: '1px',
+          borderWidth: '2px',
           borderStyle: 'solid',
-          borderImage: 'linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%) 1'
+          borderImage: 'linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 90%, rgba(255,255,255,0) 100%) 1'
         }}
       >
         <div className="flex flex-col md:flex-row">
@@ -290,15 +267,7 @@ function CategoryProjects() {
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent md:bg-gradient-to-l" />
             
-            {/* Pin Number Badge */}
-            {project.is_pinned && (
-              <div className="absolute top-4 right-4 z-20">
-                <div className="bg-black/80 backdrop-blur-sm text-yellow-400 px-2 py-1 text-xs font-bold rounded-full border border-yellow-400/30 flex items-center gap-1">
-                  <Pin className="w-3 h-3" />
-                  <span>#{project.pinNumber}</span>
-                </div>
-              </div>
-            )}
+         
 
           
 
@@ -317,72 +286,7 @@ function CategoryProjects() {
             </div>
           </Link>
 
-          {/* Content */}
-          <div className="flex-1 p-6">
-            <div className="flex flex-col h-full">
-              {/* Header */}
-              <div className="mb-4">
-                <Link 
-                  to={`/projects/project/${project.id}`}
-                  className="group/title"
-                >
-                  <h3 className="text-2xl font-black text-white mb-2 group-hover/title:text-cyan-300 transition-colors">
-                    {project.title}
-                  </h3>
-                </Link>
-                <div className="flex items-center gap-4 text-sm text-gray-300">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    {formatDate(project.created_at)}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Code className="w-4 h-4" />
-                    {projectTechnologies.length} technologies
-                  </div>
-                  {project.is_pinned && (
-                    <div className="flex items-center gap-1 text-yellow-400">
-                      <Pin className="w-4 h-4" />
-                      PINNED #{project.pinNumber}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="mb-4 flex-1">
-                <p className="text-gray-400 leading-relaxed">
-                  {project.description}
-                </p>
-              </div>
-
-              {/* Technologies and Action */}
-              <div className="flex justify-between items-center">
-                <div className="flex flex-wrap gap-2">
-                  {projectTechnologies.slice(0, 6).map((tech, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-white/5 text-cyan-300 text-xs font-medium border border-cyan-400/20 backdrop-blur-sm"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                  {projectTechnologies.length > 6 && (
-                    <span className="px-2 py-1 bg-white/5 text-gray-400 text-xs border border-white/10">
-                      +{projectTechnologies.length - 6}
-                    </span>
-                  )}
-                </div>
-                
-                <Link
-                  to={`/projects/project/${project.id}`}
-                  className={`px-6 py-3 text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-105 flex items-center gap-2 group/btn `}
-                >
-                  EXPLORE
-                  <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-200" />
-                </Link>
-              </div>
-            </div>
-          </div>
+     
         </div>
       </motion.div>
     );
@@ -662,51 +566,7 @@ function CategoryProjects() {
             </div>
           ) : (
             <div className="space-y-16">
-              {/* REGULAR SOCIAL MEDIA PROJECTS SECTION */}
-              {hasRegularProjects && (
-                <motion.section
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="space-y-8"
-                >
-                  {/* Section Header */}
-                  <div className="text-center">
-                    <h2 className="text-5xl font-black text-white mb-6 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                      SOCIAL MEDIA DESIGNS
-                    </h2>
-                    <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                      Creative social media designs and digital projects with pinned projects featured first
-                    </p>
-                  </div>
-
-                  {/* Projects Display - Grid or List based on viewMode */}
-                  {viewMode === 'grid' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                      {organizedProjects.regular.map((project, index) => (
-                        <ProjectCard 
-                          key={project.id} 
-                          project={project} 
-                          index={index} 
-                          isSports={false}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="space-y-6">
-                      {organizedProjects.regular.map((project, index) => (
-                        <ProjectListItem 
-                          key={project.id} 
-                          project={project} 
-                          index={index} 
-                          isSports={false}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </motion.section>
-              )}
-
+              
               {/* SPORTS DESIGN PROJECTS SECTION */}
               {hasSportsProjects && (
                 <motion.section
@@ -743,6 +603,43 @@ function CategoryProjects() {
                   )}
                 </motion.section>
               )}
+              {/* REGULAR SOCIAL MEDIA PROJECTS SECTION */}
+              {hasRegularProjects && (
+                <motion.section
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="space-y-8"
+                >
+               
+
+                  {/* Projects Display - Grid or List based on viewMode */}
+                  {viewMode === 'grid' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                      {organizedProjects.regular.map((project, index) => (
+                        <ProjectCard 
+                          key={project.id} 
+                          project={project} 
+                          index={index} 
+                          isSports={false}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {organizedProjects.regular.map((project, index) => (
+                        <ProjectListItem 
+                          key={project.id} 
+                          project={project} 
+                          index={index} 
+                          isSports={false}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </motion.section>
+              )}
+
             </div>
           )}
         </div>

@@ -160,7 +160,7 @@ const AdminSidebar = ({ isCollapsed, onToggle, activeSection, onSectionChange })
                   onClick={() => handleMenuItemClick(item.id)}
                   className={`w-full flex items-center space-x-3 px-3 py-2 md:px-4 md:py-3 rounded-lg transition-all duration-200 ${
                     activeSection === item.id
-                      ? 'bg-red-600 text-white shadow-lg'
+                      ? 'bg-[#550cdc] text-white shadow-lg'
                       : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   }`}
                 >
@@ -172,6 +172,17 @@ const AdminSidebar = ({ isCollapsed, onToggle, activeSection, onSectionChange })
               </li>
             );
           })}
+          {!isCollapsed && !isMobile && (
+            <li>
+            <button onClick={()=>{
+              window.location.href = '/';
+            }}
+            className='bg-[#550cdc] hover:bg-cyan-500 text-white w-full flex items-center space-x-3 px-3 py-2 md:px-4 md:py-3 rounded-lg transition-all duration-200 '
+            >
+               Client Space
+            </button>
+          </li>
+          )}
         </ul>
       </nav>
 

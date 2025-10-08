@@ -7,7 +7,16 @@ import logo from '../assets/images/logo.png'
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-
+  const [isAdmin, setIsAdmin] = useState(false)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    const user = userData ? JSON.parse(userData) : null;
+    const role = user?.role;
+    if (token || role == 'admin') {
+      setIsAdmin(true)
+    }
+  }, [])
   const navItems = [
     { name: 'Home', to: '/' },
     { name: 'About', to: '/about' },
@@ -30,40 +39,43 @@ const Navbar = () => {
   }
 
   const NavItem = ({ item }) => (
-    <NavLink
-      to={item.to}
-      end
-      className={({ isActive }) =>
-        `relative tet px-3 py-2 text-sm font-medium transition-colors duration-300 ${
-          isActive ? 'text-white' : 'text-gray-300 hover:text-white'
-        }`
-      }
-      onClick={() => setIsOpen(false)}
-    >
-      {({ isActive }) => (
-        <>
-          {item.name}
-          <motion.div
-            className="absolute left-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500"
-            variants={linkVariants}
-            initial="rest"
-            animate={isActive ? 'active' : 'rest'}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          />
-        </>
-      )}
-    </NavLink>
+    <>
+      <NavLink
+        to={item.to}
+        end
+        className={({ isActive }) =>
+          `relative tet px-3 py-2 text-sm font-medium transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-300 hover:text-white'
+          }`
+        }
+        onClick={() => setIsOpen(false)}
+      >
+        {({ isActive }) => (
+          <>
+            {item.name}
+            <motion.div
+              className="absolute left-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500"
+              variants={linkVariants}
+              initial="rest"
+              animate={isActive ? 'active' : 'rest'}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            />
+          </>
+        )}
+
+      </NavLink>
+
+
+    </>
   )
 
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed w-full z-40 transition-all duration-300 ${
-        scrolled
+      className={`fixed w-full z-40 transition-all duration-300 ${scrolled
           ? 'bg-black/60 backdrop-blur-xl shadow-lg py-2'
           : 'bg-transparent py-4'
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -87,6 +99,11 @@ const Navbar = () => {
             {navItems.map((item) => (
               <NavItem key={item.name} item={item} />
             ))}
+            {isAdmin && (
+              <NavLink to={"/Moulchipannel"} className={'text-white bg-[#550cdc] p-2 rounded-xl'}>
+                     Admin Pannel
+              </NavLink>
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -118,10 +135,9 @@ const Navbar = () => {
                   to={item.to}
                   end
                   className={({ isActive }) =>
-                    `block w-full tet px-3 py-3 rounded-md text-base font-bold transition ${
-                      isActive
-                        ? 'text-white bg-white/10'
-                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    `block w-full tet px-3 py-3 rounded-md text-base font-bold transition ${isActive
+                      ? 'text-white bg-white/10'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
                     }`
                   }
                   onClick={() => setIsOpen(false)}
@@ -129,6 +145,11 @@ const Navbar = () => {
                   {item.name}
                 </NavLink>
               ))}
+                 {isAdmin && (
+              <NavLink to={"/Moulchipannel"} className={'text-white bg-[#4f0acf] p-1'}>
+                     Admin Pannel
+              </NavLink>
+            )}
             </div>
           </motion.div>
         )}
