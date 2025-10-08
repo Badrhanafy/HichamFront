@@ -615,7 +615,16 @@ function CategoryProjects() {
                   transition={{ duration: 0.6 }}
                   className="space-y-8"
                 >
+ {/* Section Header */}
+                  <div className="text-center mb-8">
 
+                    <h2 className="text-4xl font-black mt-24 text-white mb-4 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                      Diverse projects 
+                    </h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto">
+                      Each brand has its own unique style and creative approach, showcasing a variety of design solutions for different industries and audiences.
+                    </p>
+                  </div>
 
                   {/* Projects Display - Grid or List based on viewMode */}
                   {viewMode === 'grid' ? (
