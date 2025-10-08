@@ -30,8 +30,8 @@ const router = createBrowserRouter([
    {
         path: 'projects',
         children: [
-          { index: true, element: <Contact /> }, // /projects
-          { path: ':category', element: <CategoryProjects /> } // /projects/social-media
+          { index: true, element: <Contact /> }, 
+          { path: ':category', element: <CategoryProjects /> } 
         ]
       }
     ,{

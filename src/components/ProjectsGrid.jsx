@@ -63,6 +63,22 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
     return [];
   };
 
+  // Calculate pin ranking for pinned projects
+  const getPinnedProjectsWithRanking = (projectsList) => {
+    const pinnedProjects = projectsList.filter(project => project.is_pinned);
+    
+    // Sort pinned projects by pin_order if available, otherwise by creation date
+    return pinnedProjects.sort((a, b) => {
+      if (a.pin_order !== undefined && b.pin_order !== undefined) {
+        return a.pin_order - b.pin_order;
+      }
+      return new Date(a.created_at) - new Date(b.created_at);
+    }).map((project, index) => ({
+      ...project,
+      pinNumber: index + 1
+    }));
+  };
+
   // Handle pin/unpin project
   const handlePinProject = async (projectId, pinStatus) => {
     try {
@@ -79,9 +95,7 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
 
       if (response.ok) {
         const result = await response.json();
-        // Update the project in the parent component
         onProjectUpdate(result.data);
-        // Show success message
         alert(`Project ${pinStatus ? 'pinned' : 'unpinned'} successfully!`);
       } else {
         throw new Error('Failed to update pin status');
@@ -121,9 +135,14 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
   // Extract unique categories
   const categories = ['all', ...new Set(projects.map(project => project.category))];
 
+  // Get pinned projects with ranking
+  const pinnedProjectsWithRanking = getPinnedProjectsWithRanking(projects);
+  const regularProjects = projects.filter(project => !project.is_pinned);
+
   // Filter and sort projects
-  const filteredProjects = projects
-    .filter(project => {
+  const filteredProjects = [
+    ...pinnedProjectsWithRanking, // Pinned projects always come first with ranking
+    ...regularProjects.filter(project => {
       const projectTechnologies = getTechnologies(project);
       const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -132,8 +151,7 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
                            );
       const matchesCategory = selectedCategory === 'all' || project.category === selectedCategory;
       return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
+    }).sort((a, b) => {
       switch (sortBy) {
         case 'newest':
           return new Date(b.created_at) - new Date(a.created_at);
@@ -141,15 +159,11 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
           return new Date(a.created_at) - new Date(b.created_at);
         case 'title':
           return a.title.localeCompare(b.title);
-        case 'pinned':
-          // Show pinned projects first
-          if (a.is_pinned && !b.is_pinned) return -1;
-          if (!a.is_pinned && b.is_pinned) return 1;
-          return new Date(b.created_at) - new Date(a.created_at);
         default:
           return 0;
       }
-    });
+    })
+  ];
 
   // Toggle description expansion
   const toggleDescription = (projectId) => {
@@ -376,6 +390,7 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
           <div className="mt-4 flex justify-between items-center">
             <span className="text-cyan-400 font-medium">
               {filteredProjects?.length} PROJECTS DISPLAYED
+              {pinnedProjectsWithRanking.length > 0 && ` • ${pinnedProjectsWithRanking.length} PINNED`}
             </span>
             {(searchTerm || selectedCategory !== 'all') && (
               <button
@@ -417,7 +432,7 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
                   key={project.id}
                   className={`group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden ${
                     project.is_pinned 
-                      ? 'border-yellow-400/50 hover:border-yellow-400/80' 
+                      ? 'border-yellow-400/50 hover:border-yellow-400/80 shadow-lg shadow-yellow-500/20' 
                       : 'border-white/10 hover:border-cyan-400/30'
                   }`}
                   style={{
@@ -425,18 +440,20 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
                     animation: 'fadeInUp 0.6s ease-out forwards'
                   }}
                 >
-                  {/* Pinned Badge */}
+                  {/* Pin Number Badge - Simple and Clean */}
                   {project.is_pinned && (
-                    <div className="absolute top-2 right-2 z-20">
-                      <div className="bg-yellow-500 text-black px-2 py-1 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+                    <div  className="mt-12 absolute top-2 right-2 z-20">
+                      <div className="bg-black/80 backdrop-blur-sm text-yellow-400 px-2 py-1 text-xs font-bold rounded-full border border-yellow-400/30 flex items-center gap-1">
                         <Pin className="w-3 h-3" />
-                        PINNED
+                        <span>#{project.pinNumber}</span>
                       </div>
                     </div>
                   )}
 
                   {/* Background Glow Effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${categoryColor} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${
+                    project.is_pinned ? "from-yellow-500 to-orange-500" : categoryColor
+                  } opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
                   
                   {/* Project Image */}
                   <div className="relative h-48 overflow-hidden">
@@ -627,7 +644,7 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
             {isAdmin && (
               <button
                 onClick={() => handleTogglePin(selectedProject.id, selectedProject.is_pinned)}
-                className={`absolute top-4 right-16 z-10 p-3 backdrop-blur-lg transition-colors duration-200 border hover:scale-110 transform transition-transform duration-200 ${
+                className={`absolute top-4 right-16 z-10 p-3 backdrop-blur-lg transition-all duration-200 border hover:scale-110 transform ${
                   selectedProject.is_pinned
                     ? 'bg-yellow-500 text-black border-yellow-400 hover:bg-yellow-600'
                     : 'bg-black/50 text-gray-400 border-cyan-400/20 hover:bg-yellow-500 hover:text-white'
@@ -677,9 +694,9 @@ const ProjectsGrid = ({ projects, onProjectUpdate, onProjectDelete }) => {
                         </div>
                       </div>
                       {selectedProject.is_pinned && (
-                        <div className="bg-yellow-500 text-black px-3 py-2 text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+                        <div className="bg-black/80 backdrop-blur-sm text-yellow-400 px-3 py-1 text-sm font-bold rounded-full border border-yellow-400/30 flex items-center gap-2">
                           <Pin className="w-4 h-4" />
-                          PINNED
+                          <span>PIN #{selectedProject.pinNumber}</span>
                         </div>
                       )}
                     </div>

@@ -9,6 +9,7 @@ import socials from '../assets/images/social-media.png';
 import ProjectDomeGallery from './ProjectDomeGallery';
 import Navbar from './Navbar';
 import { Helmet } from 'react-helmet-async';
+import Footer from './Footer';
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -79,7 +80,8 @@ const Contact = () => {
   
   ];
   return (
-    <section
+ <>
+      <section
       id="contact"
       className="py-20 bg-black"
     >
@@ -154,7 +156,10 @@ const Contact = () => {
           </motion.div>
         </div>
       </div>
+      
     </section>
+    <Footer/>
+ </>
   );
 };
 
