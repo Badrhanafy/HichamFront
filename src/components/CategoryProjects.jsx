@@ -706,50 +706,7 @@ function CategoryProjects() {
                 </motion.section>
               )}
 
-              {/* REGULAR SOCIAL MEDIA PROJECTS SECTION */}
-              {hasRegularProjects && (
-                <motion.section
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="space-y-6"
-                >
-                  {/* Section Header */}
-                  <div className="text-center mb-8">
-                    <h2 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                      REGULAR PROJECTS
-                    </h2>
-                    <p className="text-gray-400 max-w-2xl mx-auto">
-                      Creative social media designs and digital projects
-                    </p>
-                  </div>
-
-                  {/* Projects Display */}
-                  {viewMode === 'grid' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                      {organizedProjects.regular.map((project, index) => (
-                        <ProjectCard 
-                          key={project.id} 
-                          project={project} 
-                          index={index} 
-                          isSports={false}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {organizedProjects.regular.map((project, index) => (
-                        <ProjectListItem 
-                          key={project.id} 
-                          project={project} 
-                          index={index} 
-                          isSports={false}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </motion.section>
-              )}
+      
 
               {/* SPORTS DESIGN PROJECTS SECTION */}
               {hasSportsProjects && (
@@ -789,6 +746,50 @@ function CategoryProjects() {
                           project={project} 
                           index={index} 
                           isSports={true}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </motion.section>
+              )}
+                      {/* REGULAR SOCIAL MEDIA PROJECTS SECTION */}
+              {hasRegularProjects && (
+                <motion.section
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="space-y-6"
+                >
+                  {/* Section Header */}
+                  <div className="text-center mb-8">
+                    <h2 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                      REGULAR PROJECTS
+                    </h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto">
+                      Creative social media designs and digital projects
+                    </p>
+                  </div>
+
+                  {/* Projects Display */}
+                  {viewMode === 'grid' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {organizedProjects.regular.map((project, index) => (
+                        <ProjectCard 
+                          key={project.id} 
+                          project={project} 
+                          index={index} 
+                          isSports={false}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {organizedProjects.regular.map((project, index) => (
+                        <ProjectListItem 
+                          key={project.id} 
+                          project={project} 
+                          index={index} 
+                          isSports={false}
                         />
                       ))}
                     </div>
