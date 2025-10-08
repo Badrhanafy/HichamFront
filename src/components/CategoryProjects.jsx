@@ -140,12 +140,8 @@ function CategoryProjects() {
   // Get project accent color based on category
   const getCategoryColor = (category) => {
     const colors = {
-      'Web Development': 'from-blue-500 to-cyan-500',
-      'Mobile App': 'from-green-500 to-emerald-500',
-      'Design': 'from-purple-500 to-pink-500',
-      'AI/ML': 'from-orange-500 to-red-500',
-      'Blockchain': 'from-indigo-500 to-purple-500',
-      'default': 'from-gray-500 to-slate-500'
+      'social-media': 'from-blue-500 to-cyan-500',
+      'logo': 'from-green-500 to-emerald-500',
     };
     return colors[category] || colors.default;
   };
@@ -175,13 +171,7 @@ function CategoryProjects() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
-        className={`group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden h-full flex flex-col ${
-          project.is_pinned
-            ? "border-yellow-400/50 hover:border-yellow-400/80"
-            : isSports
-            ? "border-orange-400/30 hover:border-orange-400/50"
-            : "border-white/10 hover:border-cyan-400/30"
-        }`}
+        className={`group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden h-full flex flex-col `}
       >
         {/* Background Glow Effect */}
         <div
@@ -230,13 +220,7 @@ function CategoryProjects() {
 
         {/* Hover Border Effect */}
         <div
-          className={`absolute inset-0 border-2 transition-all duration-500 pointer-events-none ${
-            project.is_pinned
-              ? 'border-yellow-400/30 group-hover:border-yellow-400/60'
-              : isSports
-              ? 'border-orange-400/20 group-hover:border-orange-400/40'
-              : 'border-transparent group-hover:border-cyan-400/20'
-          }`}
+          className={`absolute inset-0 border-2 transition-all duration-500 pointer-events-none `}
         />
       </motion.div>
     );
@@ -253,13 +237,7 @@ function CategoryProjects() {
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
-        className={`group bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden ${
-          project.is_pinned
-            ? 'border-yellow-400/50 hover:border-yellow-400/80'
-            : isSports 
-            ? 'border-orange-400/30 hover:border-orange-400/50' 
-            : 'border-white/10 hover:border-cyan-400/30'
-        }`}
+        className={`group bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg border transition-all duration-500 overflow-hidden `}
       >
         <div className="flex flex-col md:flex-row">
           {/* Image - Direct Link */}
@@ -669,15 +647,7 @@ function CategoryProjects() {
                   transition={{ duration: 0.6 }}
                   className="space-y-6"
                 >
-                  {/* Section Header */}
-                  <div className="text-center mb-8">
-                    <h2 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                      FEATURED PROJECTS
-                    </h2>
-                    <p className="text-gray-400 max-w-2xl mx-auto">
-                      Highlighted projects pinned for special attention
-                    </p>
-                  </div>
+                 
 
                   {/* Projects Display */}
                   {viewMode === 'grid' ? (
@@ -718,7 +688,7 @@ function CategoryProjects() {
                 >
                   {/* Section Header */}
                   <div className="text-center mb-8">
-                    <h2 className="text-4xl font-black text-white mb-4 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                    <h2 className="text-4xl font-black text-white mb-4  bg-clip-text text-transparent">
                       SPORTS DESIGN PROJECTS
                     </h2>
                     <p className="text-gray-400 max-w-2xl mx-auto">
