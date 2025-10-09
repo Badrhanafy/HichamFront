@@ -132,10 +132,10 @@ if (isLoading) {
     transition={{ duration: 0.8, delay: 0.4 }}
     className="text-4xl md:text-6xl font-extrabold tracking-tight"
   >
-    <span className="block text-white">Creative </span>
-    <span className="block bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+    <span className="block text-white ">Creative </span>
+    <p className="block text-white text-transparent">
       Graphic Designer
-    </span>
+    </p>
   </motion.h1>
 
   <motion.p

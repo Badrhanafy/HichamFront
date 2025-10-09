@@ -76,6 +76,14 @@ function CategoryProjects() {
     };
   };
 
+  // Organize logos with pinned logos first
+  const getOrganizedLogos = (logosList) => {
+    const pinnedLogos = getPinnedProjectsWithRanking(logosList);
+    const nonPinnedLogos = logosList.filter(logo => !logo.is_pinned);
+    
+    return [...pinnedLogos, ...nonPinnedLogos];
+  };
+
   // Filter and sort projects
   useEffect(() => {
     let filtered = [...projects];
@@ -96,6 +104,7 @@ function CategoryProjects() {
 
   // Get organized projects for display
   const organizedProjects = getOrganizedProjects(filteredProjects);
+  const organizedLogos = getOrganizedLogos(filteredProjects);
   const hasRegularProjects = organizedProjects.regular.length > 0;
   const hasSportsProjects = organizedProjects.sports.length > 0;
 
@@ -162,6 +171,71 @@ function CategoryProjects() {
     });
   };
 
+  // Logo Card Component for logo category
+  const LogoCard = ({ logo, index }) => {
+    const [loaded, setLoaded] = useState(false);
+
+    return (
+      <motion.div
+        key={logo.id}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          duration: 0.6,
+          delay: index * 0.1,
+          type: "spring",
+          stiffness: 100
+        }}
+        whileHover={{
+          scale: 1.05,
+          transition: { duration: 0.2 }
+        }}
+        className="group relative"
+      >
+        
+
+        {/* Logo Container */}
+        <Link
+          to={`/projects/project/${logo.id}`}
+          className={`block backdrop-blur-lg border transition-all duration-500 overflow-hidden rounded-lg p-6 hover:bg-white/10 `}
+          style={{
+            borderWidth: '2px',
+            borderStyle: 'solid',
+            borderImage: 'linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%) 1'
+          }}
+        >
+          {/* Logo Image - Maintains original dimensions */}
+          <div className="relative flex items-center justify-center min-h-[120px]">
+            <img
+              src={logo.image_url}
+              alt={logo.title}
+              className="max-w-full max-h-32 object-contain transition-all duration-500 group-hover:scale-150"
+              style={{
+                width: 'auto',
+                height: 'auto'
+              }}
+              onError={(e) => {
+                e.target.src = logo;
+              }}
+            />
+
+            {/* Hover Overlay */}
+            <div className={`absolute inset-0 transition-all duration-300 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 `}>
+            </div>
+          </div>
+        </Link>
+
+        {/* Logo Title - Minimal */}
+        <div className="mt-3 text-center">
+          <h3 className="text-sm font-medium text-white truncate">
+            {logo.title}
+          </h3>
+         
+        </div>
+      </motion.div>
+    );
+  };
+
   // Project Card Component (Grid View)
   const ProjectCard = ({ project, index, isSports = false }) => {
     const projectTechnologies = getTechnologies(project);
@@ -173,7 +247,7 @@ function CategoryProjects() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
-        className="group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg transition-all duration-500 overflow-hidden h-full flex flex-col"
+        className="group relative bg-gradient-to-br  from-white/5 to-white/0 backdrop-blur-lg transition-all duration-500 overflow-hidden h-full flex flex-col"
         style={{
           borderWidth: '2px',
           borderStyle: 'solid',
@@ -181,10 +255,7 @@ function CategoryProjects() {
           borderImageSlice: 1
         }}
       >
-
-
-
-
+       
 
         {/* Project Image Container */}
         <Link
@@ -217,12 +288,7 @@ function CategoryProjects() {
             className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${loaded ? "opacity-100" : "opacity-0"
               }`}
           />
-
         </Link>
-
-
-
-
       </motion.div>
     );
   };
@@ -266,9 +332,7 @@ function CategoryProjects() {
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent md:bg-gradient-to-l" />
 
-
-
-
+            
 
             {/* Date Badge */}
             <div className="absolute bottom-4 left-4">
@@ -284,8 +348,6 @@ function CategoryProjects() {
               </div>
             </div>
           </Link>
-
-
         </div>
       </motion.div>
     );
@@ -355,7 +417,10 @@ function CategoryProjects() {
 
                 {/* Results Count */}
                 <div className="text-cyan-400 font-medium">
-                  {filteredProjects.length} LOGOS DISPLAYED
+                  {organizedLogos.length} LOGOS DISPLAYED
+                  {organizedLogos.filter(logo => logo.is_pinned).length > 0 && 
+                    ` • ${organizedLogos.filter(logo => logo.is_pinned).length} PINNED`
+                  }
                 </div>
               </div>
             </div>
@@ -363,7 +428,7 @@ function CategoryProjects() {
 
           {/* Logo Grid Layout */}
           <div className="max-w-7xl mx-auto">
-            {filteredProjects.length === 0 ? (
+            {organizedLogos.length === 0 ? (
               <div className="text-center py-24">
                 <div className="text-cyan-400 mb-6">
                   <Search className="w-20 h-20 mx-auto opacity-50" />
@@ -383,60 +448,12 @@ function CategoryProjects() {
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-8">
-                {filteredProjects.map((logo, index) => (
-                  <motion.div
+                {organizedLogos.map((logo, index) => (
+                  <LogoCard
                     key={logo.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{
-                      duration: 0.6,
-                      delay: index * 0.1,
-                      type: "spring",
-                      stiffness: 100
-                    }}
-                    whileHover={{
-                      scale: 1.05,
-                      transition: { duration: 0.2 }
-                    }}
-                    className="group relative"
-                  >
-                    {/* Logo Container */}
-                    <Link
-                      to={`/projects/project/${logo.id}`}
-                      className={`block backdrop-blur-lg border transition-all duration-500 overflow-hidden rounded-lg p-6 hover:bg-white/10 ${logo.is_pinned
-                          ? 'bg-white/5 border-yellow-400/30 hover:border-yellow-400/50'
-                          : 'bg-white/5 border-white/10 hover:border-cyan-400/30'
-                        }`}
-                    >
-                      {/* Logo Image - Maintains original dimensions */}
-                      <div className="relative flex items-center justify-center min-h-[120px]">
-                        <img
-                          src={logo.image_url}
-                          alt={logo.title}
-                          className="max-w-full max-h-32 object-contain transition-all duration-500 group-hover:scale-110"
-                          style={{
-                            width: 'auto',
-                            height: 'auto'
-                          }}
-                          onError={(e) => {
-                            e.target.src = logo;
-                          }}
-                        />
-
-                        {/* Hover Overlay */}
-                        <div className={`absolute inset-0 transition-all duration-300 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 ${logo.is_pinned ? 'bg-yellow-400/5' : 'bg-cyan-400/5'
-                          }`}>
-                        </div>
-                      </div>
-                    </Link>
-
-                    {/* Logo Title - Minimal */}
-                    <div className="mt-3 text-center">
-                      <h3 className="text-sm font-medium text-white truncate">
-                        {logo.title}
-                      </h3>
-                    </div>
-                  </motion.div>
+                    logo={logo}
+                    index={index}
+                  />
                 ))}
               </div>
             )}
@@ -568,7 +585,7 @@ function CategoryProjects() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  className="space-y-8"
+                  className="space-y-8 "
                 >
 
                   {/* Section Header */}
@@ -615,7 +632,7 @@ function CategoryProjects() {
                   transition={{ duration: 0.6 }}
                   className="space-y-8"
                 >
- {/* Section Header */}
+                  {/* Section Header */}
                   <div className="text-center mb-8">
 
                     <h2 className="text-4xl font-black mt-24 text-white mb-4 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
