@@ -192,24 +192,23 @@ function CategoryProjects() {
         }}
         className="group relative"
       >
-        
+       
 
         {/* Logo Container */}
         <Link
           to={`/projects/project/${logo.id}`}
-          className={`block backdrop-blur-lg border transition-all duration-500 overflow-hidden rounded-lg p-6 hover:bg-white/10 `}
-          style={{
-            borderWidth: '2px',
-            borderStyle: 'solid',
-            borderImage: 'linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%) 1'
-          }}
+          className={`block backdrop-blur-lg border transition-all duration-500 overflow-hidden rounded-lg p-6 hover:bg-white/10 
+           bg-white/5 border-white/10 hover:border-cyan-400/30
+          
+            `}
+         
         >
           {/* Logo Image - Maintains original dimensions */}
           <div className="relative flex items-center justify-center min-h-[120px]">
             <img
               src={logo.image_url}
               alt={logo.title}
-              className="max-w-full max-h-32 object-contain transition-all duration-500 group-hover:scale-150"
+              className="max-w-full max-h-32 object-contain transition-all duration-500 group-hover:scale-110"
               style={{
                 width: 'auto',
                 height: 'auto'
@@ -220,7 +219,7 @@ function CategoryProjects() {
             />
 
             {/* Hover Overlay */}
-            <div className={`absolute inset-0 transition-all duration-300 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 `}>
+            <div className={`absolute inset-0 transition-all duration-300 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 bg-cyan-400/5 `}>
             </div>
           </div>
         </Link>
@@ -247,7 +246,7 @@ function CategoryProjects() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
-        className="group relative bg-gradient-to-br  from-white/5 to-white/0 backdrop-blur-lg transition-all duration-500 overflow-hidden h-full flex flex-col"
+        className="group relative bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-lg transition-all duration-500 overflow-hidden h-full flex flex-col"
         style={{
           borderWidth: '2px',
           borderStyle: 'solid',
@@ -255,7 +254,7 @@ function CategoryProjects() {
           borderImageSlice: 1
         }}
       >
-       
+
 
         {/* Project Image Container */}
         <Link
@@ -332,7 +331,7 @@ function CategoryProjects() {
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent md:bg-gradient-to-l" />
 
-            
+           
 
             {/* Date Badge */}
             <div className="absolute bottom-4 left-4">
@@ -585,7 +584,7 @@ function CategoryProjects() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  className="space-y-8 "
+                  className="space-y-8"
                 >
 
                   {/* Section Header */}
