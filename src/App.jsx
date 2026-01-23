@@ -20,9 +20,12 @@ function App() {
 
         <Footer />
       </ScrollProgressProvider> */}
-     <img src={logo} />
-      <h1>Coming Soon</h1>
-<p>Website under maintenance</p>
+    
+     <center>
+       <img src={logo}  width={"6vh"} height={"6vh"}/>
+          <h1 className='text-white'>Coming Soon</h1>
+     <p className='text-white'>Website under maintenance</p>
+     </center>
 
     </div>
   )
