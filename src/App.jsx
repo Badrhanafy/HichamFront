@@ -22,9 +22,11 @@ function App() {
       </ScrollProgressProvider> */}
     
      <center>
-       <img src={logo}  width={"6vh"} height={"6vh"}/>
+       <div className="bg-black">
+           <img src={logo}  width={"6vh"} height={"6vh"}/>
           <h1 className='text-white'>Coming Soon</h1>
      <p className='text-white'>Website under maintenance</p>
+       </div>
      </center>
 
     </div>
