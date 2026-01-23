@@ -23,7 +23,7 @@ function App() {
     
      <center>
        <div className="bg-black">
-           <img src={logo}  width={"6vh"} height={"6vh"}/>
+           <img src={logo}  width={"26vh"} height={"26vh"}/>
           <h1 className='text-white'>Coming Soon</h1>
      <p className='text-white'>Website under maintenance</p>
        </div>
