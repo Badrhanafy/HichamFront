@@ -9,7 +9,7 @@ import { ScrollProgress, ScrollProgressProvider } from '@/components/animate-ui/
 function App() {
   return (
     <div className="App bg-gradient-to-br from-white to-gray-50 text-gray-800 min-h-screen">
-      {/* <ScrollProgressProvider global>
+       <ScrollProgressProvider global>
         <ScrollProgress className="fixed top-0 left-0 w-full h-1 bg-purple-600 z-50" />
         <Navbar />
         
@@ -19,15 +19,9 @@ function App() {
         </main>
 
         <Footer />
-      </ScrollProgressProvider> */}
+      </ScrollProgressProvider> 
     
-     <center>
-       <div className="bg-black">
-           <img src={logo}  width={"26vh"} height={"26vh"}/>
-          <h1 className='text-white'>Coming Soon</h1>
-     <p className='text-white'>Website under maintenance</p>
-       </div>
-     </center>
+     
 
     </div>
   )
